@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "shared/api/order_type.proto";
+import "shared/api/truck.proto";
+import "shared/api/coordinates.proto";
+import "shared/api/recaptcha_event.proto";
+
+import "buf/validate/validate.proto";
+import "google/type/date.proto";
+
+option go_package = "waterordersystem/GOBACKEND/modules/user/api;endpoints";
+
+service UserService {
+    rpc GetUserInfoHandler (GetUserInfoQuery) returns (GetUserInfoResponse);
+    rpc LoginViaPasswordHandler (LoginViaPasswordCommand) returns (LoginViaPasswordResponse);
+    rpc LoginViaOAuthHandler (LoginViaOAuthCommand) returns (LoginViaOAuthResponse);
+    rpc ForgotPasswordHandler (ForgotPasswordCommand) returns (ForgotPasswordResponse);
+    rpc ResetPasswordHandler (ResetPasswordCommand) returns (ResetPasswordResponse);
+    rpc CreateUserViaEmailHandler (CreateUserViaEmailCommand) returns (CreateUserViaEmailResponse);
+}
+
+message GetUserInfoQuery {
+
+}
+
+message GetUserInfoResponse {
+    string firstName = 1;
+    string lastName = 5;
+    string phone = 3;
+    optional string email = 2;
+    optional string google_user_id =  4;
+}
+
+message LoginViaPasswordCommand {
+    string email = 2;
+    string password = 3;
+}
+
+message LoginViaPasswordResponse {
+    string jwtToken = 1;
+}
+
+message LoginViaOAuthCommand {
+    string accessToken = 1;
+}
+
+message LoginViaOAuthResponse {
+    // string redirectUrl = 1;
+    string jwtToken = 1;
+}
+
+message ForgotPasswordCommand {
+    string email = 1 [
+        (buf.validate.field).string.email = true
+    ];
+    shared.RecaptchaEvent recaptchaEvent = 2;
+}
+
+message ForgotPasswordResponse {
+    string SessionToken = 1;
+}
+
+message ResetPasswordCommand {
+    string sessionToken = 1;
+    int32 verificationCode = 2;
+    string password = 3 [(buf.validate.field).string = {
+        pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])(?=.*\\d).{8,}$",
+        min_len: 8 
+    }];
+}
+
+message ResetPasswordResponse {
+
+}
+
+
+message CreateUserViaEmailCommand {
+    string email = 1 [
+        (buf.validate.field).string.email = true
+    ];
+    optional UserInfo userInfo = 2;
+
+    message UserInfo {
+        string firstName = 1;
+        string lastName = 6;
+        string phone = 2;
+        shared.RecaptchaEvent recaptchaEvent = 5;
+        VerificationSession verificationSession = 7;
+
+        message VerificationSession {
+            string sessionToken = 1;
+            int32 verificationCode = 2;
+        }
+    }
+}
+
+message CreateUserViaEmailResponse {
+    string verificationSessionToken = 1;
+    optional string jwtToken = 2;
+    optional int32 verificationCode = 3;
+}
+
+message CreateUserViaOAuthCommand {
+    string google_oauth_authorization_code = 1;
+}
+
+message CreateUserViaOAuthResponse {
+    string jwtToken = 1;
+}

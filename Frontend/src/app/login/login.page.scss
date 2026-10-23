@@ -1,0 +1,47 @@
+ion-content {
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+.form-fields{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    padding-top: 30px;
+}
+
+.form-fields ion-button {
+    
+}
+
+.other-actions-desc{
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 20px 0;
+}
+
+.sso-buttons{
+    display: flex;
+    justify-content: center;
+}
+
+.legal-disclamer{
+    padding: 20px 0 0 0;
+}
+
+.or-text-container{
+    display: flex;
+    justify-content: center;
+}
+
+.google-button{
+    display: flex;
+    align-items: center;
+}
+
+.google-button img {
+    width: 20px;
+}

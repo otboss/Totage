@@ -1,0 +1,567 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "shared/api/order_type.proto";
+import "shared/api/truck.proto";
+import "shared/api/coordinates.proto";
+import "shared/api/pagination.proto";
+import "shared/api/freight_truck_class.proto";
+import "shared/api/job_timeslot.proto";
+
+import "buf/validate/validate.proto";
+
+option go_package = "waterordersystem/GOBACKEND/modules/logistic/api;endpoints";
+
+service LogisticService {
+    rpc GetLogisticQueueSizeHandler(GetLogisticQueueSizeQuery) returns (GetLogisticQueueSizeResponse);
+    rpc CompleteLogisticHandler(CompleteLogisticCommand) returns (CompleteLogisticResponse);
+    rpc GetLogisticScheduleHandler(GetLogisticScheduleQuery) returns (GetLogisticScheduleResponse);
+
+    rpc CreateVehicleHandler (CreateVehicleCommand) returns (CreateVehicleResponse);
+    rpc UpdateVehicleDriverHandler (UpdateVehicleDriverCommand) returns (UpdateVehicleDriverResponse);
+    rpc DeleteVehicleHandler (DeleteVehicleCommand) returns (DeleteVehicleResponse);
+
+    rpc CreateTruckHandler (CreateTruckCommand) returns (CreateTruckResponse);
+    rpc CreateRentalVehicleHandler (CreateRentalVehicleCommand) returns (CreateRentalVehicleResponse);
+    rpc CreateVehicleOrderTypeAllocationHandler (CreateVehicleOrderTypeAllocationCommand) returns (CreateVehicleOrderTypeAllocationResponse);
+
+    rpc TogglePublicityRentalVehicleHandler (TogglePublicityRentalVehicleCommand) returns (TogglePublicityRentalVehicleResposnse);
+    rpc TogglePublicityTruckHandler (TogglePublicityTruckTruckCommand) returns (TogglePublicityTruckTruckResponse);
+
+    rpc GetVehicleHandler (GetVehicleQuery) returns (GetVehicleResponse);
+    rpc GetRentalVehicleHandler (GetRentalVehicleQuery) returns (GetRentalVehicleResponse);
+    rpc GetTruckHandler (GetTruckQuery) returns (GetTruckResponse);
+    
+
+    // rpc GetTrucksHandler (GetTrucksQuery) returns (GetTrucksResponse);
+    // rpc GetRentalVehiclesHandler (GetRentalVehiclesQuery) returns (GetRentalVehiclesResponse);
+ 
+
+    rpc GetVehiclesHandler (GetVehiclesQuery) returns (GetVehiclesResponse);
+
+    rpc GetFreightTruckClassesNearbyHandler(GetFreightTruckClassesNearbyQuery) returns (GetFreightTruckClassesNearbyResponse);
+
+    rpc GetFreightTrucksNearbyHandler (GetFreightTrucksNearbyQuery) returns (GetTrucksNearbyResponse);
+    rpc GetBulkGoodTrucksNearbyHandler (GetBulkGoodTrucksNearbyQuery) returns (GetTrucksNearbyResponse);
+    rpc GetRentalVehiclesNearbyHandler (GetRentalVehiclesNearbyQuery) returns (GetRentalVehiclesNearbyResponse);
+
+    rpc UpdateTruckLocationHandler (UpdateTruckLocationCommand) returns (UpdateTruckLocationResponse);
+
+    rpc ValidateAddressesHandler (ValidateAddressesQuery) returns (ValidateAddressesResponse);
+    rpc ReverseGeocodingHandler (ReverseGeocodingQuery) returns (ReverseGeocodingResponse);
+    rpc GeocodingHandler (GeocodingQuery) returns (GeocodingResponse);
+
+    rpc ApproveVehicleHandler (ApproveVehicleCommand) returns (ApproveVehicleResponse);
+
+
+    // rpc CreateJobTimeslotHandler (CreateJobTimeslotCommand) returns (CreateJobTimeslotResponse);
+    rpc SetJobTimeslotsHandler (SetJobTimeslotCommand) returns (SetJobTimeslotResponse);
+    rpc DeleteJobTimeslotHandler (DeleteJobTimeslotCommand) returns (DeleteJobTimeslotResponse);
+    rpc GetJobTimeslotsHandler (GetJobTimeslotsQuery) returns (GetJobTimeslotsResponse);
+}
+
+
+message SetJobTimeslotCommand {
+    int64 vehicleId = 1 [
+        (buf.validate.field).cel = {
+            id: "vehicleId.required",
+            message: "Vehicle Id is required",
+            expression: "this != 0"
+        }
+    ];
+
+    // Field-level CEL validation to prevent overlaps across the list of timeslots
+    repeated shared.JobTimeslot jobTimeslots = 2 [
+        (buf.validate.field).cel = {
+            id: "jobTimeslots.no_overlap",
+            message: "Timeslots cannot overlap on the same weekday",
+            expression: "this.all(t1, this.all(t2, t1 == t2 || t1.weekdays.all(d, !t2.weekdays.exists(d2, d == d2)) || (t1.endHH * 60 + t1.endMM) <= (t2.startHH * 60 + t2.startMM) || (t2.endHH * 60 + t2.endMM) <= (t1.startHH * 60 + t1.startMM)))"
+        }
+    ];
+}
+
+message SetJobTimeslotResponse {
+
+}
+
+message DeleteJobTimeslotCommand {
+    int64 jobTimeslotId = 1 [
+        (buf.validate.field).cel = {
+            id: "jobTimeslotId.required",
+            message: "Job Timeslot Id is required",
+            expression: "this != 0"
+        }
+    ];
+}
+
+message DeleteJobTimeslotResponse {
+
+}
+
+message GetJobTimeslotsQuery {
+    int64 vehicleId = 1 [
+        (buf.validate.field).cel = {
+            id: "vehicleId.required",
+            message: "Vehicle Id is required",
+            expression: "this != 0"
+        }
+    ];
+}
+
+message GetJobTimeslotsResponse {
+    repeated shared.JobTimeslot jobTimeslot = 1;
+}
+
+message GetLogisticScheduleQuery {
+    int64 organizationId = 1;
+    int32 month = 2;
+    int64 truckId = 3;
+}
+
+message GetLogisticScheduleResponse {
+    repeated Schedule schedule = 1;
+
+    message Schedule {
+        google.protobuf.Timestamp timestamp = 1;
+        ScheduleItem scheduleItem = 2;
+
+        message ScheduleItem {
+            string orderId = 1;
+            double jobRoundTripDistanceInKm = 2;
+            string orderType = 3;
+            shared.Truck truck = 4;
+        }
+    }
+}
+
+
+message GetLogisticQueueSizeQuery {
+    int64 organizationId = 1;
+}
+
+message GetLogisticQueueSizeResponse {
+    int32 currentSize = 1;
+    optional int32 limit = 2;
+}
+
+message CompleteLogisticCommand {
+    string orderId = 1;
+}
+
+message CompleteLogisticResponse {
+    LogisticCompleteStatus status = 1;
+}
+
+enum LogisticCompleteStatus {
+    NOT_FOUND = 0;
+    COMPLETED = 1;
+}
+
+message CreateVehicleCommand {
+    int64 organizationId = 1 [
+        (buf.validate.field).cel = {
+            id: "organizationId.required",
+            message: "Organization id is required",
+            expression: "this != 0"
+        }
+    ];
+    int64 year = 2 [
+        (buf.validate.field).cel = {
+            id: "year.required",
+            message: "Year is required",
+            expression: "this != 0"
+        },
+        (buf.validate.field).cel = {
+            id: "year.range",
+            message: "Invalid year provided",
+            expression: "this > 1900 && this < 2999"
+        }
+    ];
+    string make = 3 [
+        (buf.validate.field).cel = {
+            id: "make.required",
+            message: "Make is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "make.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    string model = 4 [
+        (buf.validate.field).cel = {
+            id: "model.required",
+            message: "Model is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "model.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    string chassisNumber = 5 [
+        (buf.validate.field).cel = {
+            id: "chassisNumber.required",
+            message: "Chassis number is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "chassisNumber.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    string licensePlateNumber = 6 [
+        (buf.validate.field).cel = {
+            id: "licensePlateNumber.required",
+            message: "License plate number is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "licensePlateNumber.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    int64 seatingCapacity = 7 [
+        (buf.validate.field).cel = {
+            id: "seatingCapacity.range",
+            message: "Invalid seating capacity provided",
+            expression: "this > 0 && this < 1000"
+        }
+    ];
+    FuelType fuelType = 8[
+        (buf.validate.field).cel = {
+            id: "fuelType.required",
+            message: "Fuel type is required",
+            expression: "this != 0"
+        }
+    ];
+    bool isManualTransmission = 9;
+    string driverAccountId = 10 [
+        (buf.validate.field).cel = {
+            id: "driverAccountId.required",
+            message: "Driver account id is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "driverAccountId.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+}
+
+message CreateVehicleResponse {
+    int64 vehicleId = 1;
+}
+
+message UpdateVehicleDriverCommand {
+    int64 vehicleId = 1;
+    string driver_account_id = 2;
+}
+
+message UpdateVehicleDriverResponse {
+
+}
+
+message DeleteVehicleCommand {
+    int64 vehicleId = 1;
+    int64 organizationId = 2;
+}
+
+message DeleteVehicleResponse {
+    
+}
+
+message CreateTruckCommand {
+    int64 vehicleId = 2;
+    shared.TruckCreate truck = 4;
+}
+
+message CreateTruckResponse {
+    int64 truckId = 1;
+}
+
+message RentalVehicle {
+    double dailyRentalCost = 4[
+        (buf.validate.field).cel = {
+            id: "dailyRentalCost.required",
+            message: "Daily rental cost is required",
+            expression: "this > 0"
+        }
+    ];
+    bool isDriverMandatory = 6;
+    int64 minDaysRental = 7 [
+        (buf.validate.field).cel = {
+            id: "minDaysRental.required",
+            message: "Min days rental is required",
+            expression: "this > 0"
+        }
+    ];
+    bool isPublic = 9;
+    optional double driverCost = 5;
+    optional int64 driverAccountId = 8;
+}
+
+message CreateRentalVehicleCommand {
+    // optional int64 rentalVehicleId = 1;
+    // CreateVehicleCommand vehicle = 2;
+    int64 vehicleId = 1;
+    RentalVehicle rentalVehicle = 2;
+}
+
+message CreateRentalVehicleResponse {
+    int64 rentalVehicleId = 1;
+}
+
+enum FuelType {
+    FUEL_TYPE_UNSPECIFIED = 0;
+    ELECTRIC = 1;
+    PETROL = 2;
+    DIESEL = 3;
+    USLD = 4;
+    LNG = 5;
+    LPG = 6;
+}
+
+
+message CreateVehicleOrderTypeAllocationCommand {
+    int64 vehicleId = 1;
+    int64 organizationId = 2;
+    shared.OrderType orderType = 3;
+    double maxCapacity = 4;
+}
+
+message CreateVehicleOrderTypeAllocationResponse {
+    int64 vehicleAllocationId = 1;
+}
+
+message TogglePublicityRentalVehicleCommand {
+    int64 vehicleId = 1;
+    bool IsPublic = 2;
+}
+
+message TogglePublicityRentalVehicleResposnse {
+
+}
+
+message TogglePublicityTruckTruckCommand {
+    int64 vehicleId = 1;
+    bool IsPublic = 2;
+}
+
+message TogglePublicityTruckTruckResponse {
+
+}
+
+message GetTruckQuery {
+    int64 vehicleId = 1;
+}
+
+message GetTruckResponse {
+    shared.Truck truck = 1;
+}
+
+message ApproveVehicleCommand {
+    int64 vehicleId = 1;
+}
+
+message ApproveVehicleResponse {
+
+}
+
+message GetTrucksQuery {
+    int64 organizationId = 1;
+    shared.Pagination pagination = 2;
+}
+
+message GetTrucksResponse {
+    repeated Truck trucks = 1;
+
+    message Truck {
+        shared.Truck truck = 1;
+        string chassisNumber = 2;
+    }
+}
+
+message GetRentalVehicleQuery {
+    int64 vehicleId = 1;
+}
+
+message GetRentalVehicleResponse {
+    RentalVehicle rentalVehicle = 1;
+}
+
+message GetRentalVehiclesQuery {
+    int64 organizationId = 1;
+    shared.Pagination pagination = 2;
+}
+
+message GetRentalVehiclesResponse {
+    repeated RentalVehicle rentalVehicles = 1;
+
+    message RentalVehicle {
+        int64 rentalVehicleId = 1;
+        int64 year = 2;
+        string make = 3;
+        string model = 4;
+    }
+}
+
+message Vehicle {
+    int64 vehicleId = 1;
+    int64 year = 2;
+    string make = 3;
+    string model = 4;
+    string chassisNumber = 5;
+    string licensePlateNumber = 6;
+    int64 seatingCapacity = 7;
+    FuelType fuelType = 8;
+    bool isManualTransmission = 9;
+    string driverAccountId = 13;
+    bool isApproved = 14;
+    optional int64 rentalVehicleId = 11;
+    optional int64 truckId = 12;
+}
+
+message GetVehiclesQuery {
+    int64 organizationId = 1;
+    shared.Pagination pagination = 2;
+}
+
+message GetVehiclesResponse {
+    repeated Vehicle vehicles = 1;
+}
+
+message GetVehicleQuery {
+    int64 vehicleId = 1;
+}
+
+message GetVehicleResponse {
+    Vehicle vehicle = 1;
+}
+
+message FreightTruckClass {
+    shared.FreightTruckClass class = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).enum = {
+            defined_only: true,
+            not_in: [0]
+        }
+    ];
+    shared.FreightTruckProperty property = 2;
+}
+
+message GetFreightTruckClassesNearbyQuery {
+    shared.Coordinates pickupAddress = 1 [(buf.validate.field).required = true];
+}
+
+message GetFreightTruckClassesNearbyResponse {
+    repeated FreightTruckClass freightTruckClasses = 1;
+}
+
+message GetFreightTrucksNearbyQuery {
+    shared.Coordinates pickupAddress = 1 [(buf.validate.field).required = true];
+    FreightTruckClass freightTruckClass = 2 [(buf.validate.field).required = true];
+    string countryCodeAlpha3 = 4;
+}
+
+message GetBulkGoodTrucksNearbyQuery {
+    shared.Coordinates address = 1 [(buf.validate.field).required = true];
+    shared.OrderType orderType = 3;
+    string countryCodeAlpha3 = 4;
+    double orderQuantity = 5;
+}
+
+message GetTrucksNearbyResponse {
+    repeated TruckResult trucks = 1;
+
+    message TruckResult {
+        int64 organizationId = 1;
+        string organizationName = 2;
+        shared.Truck truck = 3;
+        double distanceAwayKm = 4;
+        double estimatedJobDurationHours = 5;
+    }
+}
+
+message GetRentalVehiclesNearbyQuery {
+    string address = 1;
+    string countryCodeAlpha3 = 2;
+    int64 seatingCapacity = 3;
+}
+
+message GetRentalVehiclesNearbyResponse {
+    repeated RentalVehicleResult rentalVehicles = 1;
+
+    message RentalVehicleResult {
+        int64 id = 12;
+        int64 vehicleId = 13;
+        int64 organizationId = 1;
+        int32 year = 2;
+        string make = 3;
+        string model = 4;
+        int32 seatingCapacity = 6;
+        string fuelType = 7;
+        double dailyRentalCost = 8;
+        int32 minDaysRental = 9;
+        bool isManualTransmission = 11;
+    }
+}
+
+message GetTrucksByOrganizationQuery {
+    int64 OrganizationId = 1;
+    int64 searchRadiusKm = 2;
+}
+
+message GetTrucksByOrganizationResponse {
+    repeated shared.Truck trucks = 1;
+}
+
+message UpdateTruckLocationCommand {
+    int64 truckId = 1;
+    shared.Coordinates coordinates = 2;
+}
+
+message UpdateTruckLocationResponse {
+
+}
+
+message ValidateAddressesQuery {
+    repeated Location waypointAddresses = 3 [(buf.validate.field).repeated.min_items = 2];
+
+    message Location {
+        string address = 1 [(buf.validate.field).string.min_len = 5];
+        optional shared.Coordinates coordinates = 2;
+    }
+}
+
+message ValidateAddressesResponse {
+    repeated ValidationResponse  validationResponse = 1;
+
+    message ValidationResponse {
+        int64 index = 1;
+        bool validationResponse = 2;
+    }
+}
+
+message ReverseGeocodingQuery {
+    shared.Coordinates coordinates = 1;
+}
+
+message ReverseGeocodingResponse {
+    string address = 1;
+}
+
+message GeocodingQuery {
+    string address = 1 [(buf.validate.field).required = true];   
+}
+
+message GeocodingResponse {
+    shared.Coordinates coordinates = 1;
+}

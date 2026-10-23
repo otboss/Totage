@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package shared;
+
+import "buf/validate/validate.proto";
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+    
+message Pagination {
+        optional string filterText = 1;
+        optional int64 offsetId = 2;
+        int64 limit = 3 [
+            (buf.validate.field).int64.gte = 10,
+            (buf.validate.field).int64.lte = 50
+        ];
+}

@@ -1,0 +1,32 @@
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <h5>Provide Stops</h5>
+    </ion-col>
+  </ion-row>
+  <ion-row class="fill-row">
+    <div class="location-fields-container">
+      <div class="location-field-row">
+        <div class="location-field-container">
+          <ion-input fill="outline" placeholder="Pickup Location"></ion-input>
+        </div>
+        <img [src]="mapImage"/>
+      </div>
+      <div class="location-field-row">
+        <div class="location-field-container">
+          <ion-input fill="outline" placeholder="Dropoff Location"></ion-input>
+        </div>
+        <img [src]="mapImage"/>
+      </div>
+
+      <div>
+        <ion-button expand="block">+ Add Stop</ion-button>
+      </div>
+      
+    </div>
+    <!-- <ion-input label="Password" label-placement="floating" fill="outline" placeholder="Enter text"></ion-input> -->
+  </ion-row>
+  <ion-row class="actions-row">
+    <ion-button expand="block" disabled="true">Continue</ion-button>
+  </ion-row>
+</ion-grid>

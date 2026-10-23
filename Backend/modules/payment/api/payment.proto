@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "shared/api/order_type.proto";
+import "shared/api/truck.proto";
+import "shared/api/coordinates.proto";
+import "shared/api/country.proto";
+import "shared/api/recaptcha_event.proto";
+import "shared/api/pagination.proto";
+import "shared/api/job_timeslot.proto";
+
+import "buf/validate/validate.proto";
+import "google/type/date.proto";
+
+option go_package = "waterordersystem/GOBACKEND/modules/payment/api;endpoints";
+
+
+service PaymentService {
+    rpc PaypalCaptureOrderHandler(PaypalCaptureOrderCommand) returns (PaypalCaptureOrderResponse);
+    rpc BitcoinPaymentHandler (BitcoinPaymentCommand) returns (BitcoinPaymentResponse);
+    rpc BitcoinLightningPaymentHandler (BitcoinLightningPaymentCommand) returns (BitcoinLightningPaymentResponse);
+}
+
+message PaypalCaptureOrderCommand {
+    string orderId = 2 [(buf.validate.field).required = true];
+}
+
+message PaypalCaptureOrderResponse {
+
+    message Name {
+        string given_name = 1;
+        string surname = 2;
+    }
+
+    message Paypal {
+        Name name = 1;
+        string email_address = 2 [
+            (buf.validate.field).string.email = true
+        ];
+        string account_id = 3;
+    }
+
+    message Payment_source {
+        Paypal paypal = 1;
+    }
+
+    message Address {
+        string address_line_1 = 1;
+        string address_line_2 = 2;
+        string admin_area_2 = 3;
+        string admin_area_1 = 4;
+        string postal_code = 5;
+        string country_code = 6;
+    }
+
+    message Shipping {
+        Address address = 1;
+    }
+
+    message Amount {
+        string currency_code = 1;
+        string value = 2;
+    }
+
+    message Seller_protection {
+        string status = 1;
+        repeated string dispute_categories = 2;
+    }
+
+    message Gross_amount {
+        string currency_code = 1;
+        string value = 2;
+    }
+
+    message Paypal_fee {
+        string currency_code = 1;
+        string value = 2;
+    }
+
+    message Net_amount {
+        string currency_code = 1;
+        string value = 2;
+    }
+
+    message Seller_receivable_breakdown {
+        Gross_amount gross_amount = 1;
+        Paypal_fee paypal_fee = 2;
+        Net_amount net_amount = 3;
+    }
+
+    message Links {
+        string href = 1;
+        string rel = 2;
+        string method = 3;
+    }
+
+    message Captures {
+        string id = 1;
+        string status = 2;
+        Amount amount = 3;
+        Seller_protection seller_protection = 4;
+        bool final_capture = 5;
+        string disbursement_mode = 6;
+        Seller_receivable_breakdown seller_receivable_breakdown = 7;
+        int64 create_time = 8;
+        int64 update_time = 9;
+        repeated Links links = 10;
+    }
+
+    message Payments {
+        repeated Captures captures = 1;
+    }
+
+    message Purchase_units {
+        string reference_id = 1;
+        Shipping shipping = 2;
+        Payments payments = 3;
+    }
+
+    message Name1 {
+        string given_name = 1;
+        string surname = 2;
+    }
+
+    message Payer {
+        Name1 name = 1;
+        string email_address = 2;
+        string payer_id = 3;
+    }
+
+    message Links1 {
+        string href = 1;
+        string rel = 2;
+        string method = 3;
+    }
+
+    string id = 1;
+    string status = 2;
+    Payment_source payment_source = 3;
+    repeated Purchase_units purchase_units = 4;
+    Payer payer = 5;
+    repeated Links1 links = 6;
+}
+
+message BitcoinPaymentCommand {
+    int64 orderId = 1 [(buf.validate.field).required = true];
+}
+
+message BitcoinPaymentResponse {
+    string publicKey = 2;
+}
+
+message BitcoinLightningPaymentCommand {
+    int64 orderId = 1 [(buf.validate.field).required = true];
+}
+
+message BitcoinLightningPaymentResponse {
+    string publicKey = 2;
+}

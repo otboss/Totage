@@ -1,0 +1,653 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="dashboardPage"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ vehicle == null ? 'Add' : 'Edit' }} Vehicle</ion-title>
+    <ion-buttons slot="end">
+       <div class="header-action-icons">
+        @if(vehicle != null){
+          <ion-icon icon="trash-bin-outline" color="danger" (click)="deleteVehicle()"></ion-icon>
+        }
+       </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form #form (submit)="onSubmit()">
+    <div class="swiper-container">
+      <swiper-container #swiper space-between="30" slides-per-view="1" class="swiper-no-swiping" auto-height="true" slides-per-view="1">
+        <swiper-slide>
+          <div class="swiper-slide-inner-container">
+            <ion-grid>
+
+                <ion-row>
+                  <ion-input 
+                    #yearField 
+                    fill="outline" 
+                    label="Year" 
+                    type="number"
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().year"
+                    (keyup)="updateVehicleForm('year',  BigInt((yearField.value || '0').toString()))"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().year"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().year"
+                    (ionBlur)="formErrorsVehicle().year && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.year ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                <ion-row>
+                  <ion-input 
+                    #makeField 
+                    fill="outline" 
+                    label="Make" 
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().make"
+                    (keyup)="updateVehicleForm('make',  makeField.value.toString())"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().make"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().make"
+                    (ionBlur)="formErrorsVehicle().make && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.make ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                <ion-row>
+                  <ion-input 
+                    #modelField 
+                    fill="outline" 
+                    label="Model" 
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().model"
+                    (keyup)="updateVehicleForm('model',  modelField.value.toString())"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().model"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().model"
+                    (ionBlur)="formErrorsVehicle().model && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.model ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                <ion-row>
+                  <ion-input 
+                    #chassisNumberField 
+                    fill="outline" 
+                    label="Chassis Number" 
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().chassisNumber"
+                    (keyup)="updateVehicleForm('chassisNumber',  chassisNumberField.value.toString())"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().chassisNumber"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().chassisNumber"
+                    (ionBlur)="formErrorsVehicle().chassisNumber && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.chassisNumber ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                <ion-row>
+                  <ion-input 
+                    #licensePlateNumberField 
+                    fill="outline" 
+                    label="License Plate Number" 
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().licensePlateNumber"
+                    (keyup)="updateVehicleForm('licensePlateNumber',  licensePlateNumberField.value.toString())"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().licensePlateNumber"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().licensePlateNumber"
+                    (ionBlur)="formErrorsVehicle().licensePlateNumber && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.licensePlateNumber ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                <ion-row>
+                  <ion-input 
+                    #seatingCapacityField
+                    type="number"
+                    fill="outline" 
+                    label="Seating Capacity" 
+                    labelPlacement="floating" 
+                    [errorText]="formErrorsVehicle().seatingCapacity"
+                    (keyup)="updateVehicleForm('seatingCapacity',  BigInt((seatingCapacityField.value || '0').toString()))"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().seatingCapacity"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().seatingCapacity"
+                    (ionBlur)="formErrorsVehicle().seatingCapacity && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="vehicle?.seatingCapacity ?? ''"
+                    >
+                  </ion-input>
+                </ion-row>
+
+                  <ion-select 
+                    #fuelTypeField 
+                    label="Fuel Type" 
+                    label-placement="floating" 
+                    fill="outline" 
+                    interface="popover"
+                    [errorText]="formErrorsVehicle().fuelType"
+                    (ionChange)="updateVehicleForm('fuelType',  getFuelTypeNumberFromFuelName($event.detail.value))"
+                    [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().fuelType"
+                    [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().fuelType"
+                    (ionBlur)="formErrorsVehicle().fuelType && showFieldErrorsVehicle($event.target)"
+                    [disabled]="vehicle != null"
+                    [value]="getFuelType(vehicle?.fuelType) ?? ''">
+                    @for(fuelType of fuelTypeOptions; track $index){
+                      <ion-select-option [value]="fuelType">{{ fuelType }}</ion-select-option>
+                    }
+                  </ion-select>
+                  
+                  <ion-row>
+                    <ion-input 
+                      #driverAccountIdField
+                      fill="outline" 
+                      label="Driver" 
+                      labelPlacement="floating" 
+                      [errorText]="formErrorsVehicle().driverAccountId"
+                      readonly="true"
+                      [class.ion-touched]="isSubmitAttempted && formErrorsVehicle().driverAccountId"
+                      [class.ion-invalid]="isSubmitAttempted && formErrorsVehicle().driverAccountId"
+                      (ionBlur)="formErrorsVehicle().driverAccountId && showFieldErrorsVehicle($event.target)"
+                      [value]="getDriverAccountId()"
+                      (click)="toggleSelectDriverModal(true)"
+                      >
+                    </ion-input>
+                  </ion-row>
+
+                  <ion-modal [isOpen]="isSelectDriverModalOpen">
+                    <ng-template>
+                      <ion-header [translucent]="true" class="ion-no-border">
+                        <ion-toolbar>
+                          <ion-title>Select Driver</ion-title>
+                          <ion-buttons slot="end">
+                            <ion-button (click)="toggleSelectDriverModal(false)">Close</ion-button>
+                          </ion-buttons>
+                        </ion-toolbar>
+                      </ion-header>
+                      <ion-content>
+
+                        <!-- TODO: Implement infinite scrolling list -->
+                        @if(drivers != null){
+                          @for(driver of drivers; track $index){
+                            <div class="driver-row" (click)="selectDriver(driver.accountId)">
+                              <div>
+                                ID: {{ driver.accountId }}
+                              </div>
+                              <div>
+                                {{ driver.firstName }} {{ driver.lastName }}
+                              </div>
+                              <div>
+                                {{ driver.email }}
+                              </div>
+                            </div>
+                          }
+                        }
+                        
+                      </ion-content>
+                    </ng-template>
+                  </ion-modal>
+
+                  <ion-row>
+                    <div class="checkbox-option">
+                      <div>
+                        <ion-checkbox 
+                          (ionChange)="updateVehicleForm('isManualTransmission', $event.detail.checked)" 
+                          [disabled]="vehicle != null"
+                          [checked]="vehicle?.isManualTransmission ?? false">
+                        </ion-checkbox>
+                      </div>
+                      <div>
+                        Manual Transmission?
+                      </div>
+                    </div>
+                  </ion-row>
+
+                  <div class="vehicle-details-section">
+                    Select Vehicle Type
+                  </div>
+                  <ion-segment [scrollable]="true" [value]="vehicleCategory" (ionChange)="setVehicleCategory($event.detail.value)">
+                    <ion-segment-button value="commercial">
+                      <span>Commercial</span>
+                    </ion-segment-button>
+                    <ion-segment-button value="private">
+                      <span>Private</span>
+                    </ion-segment-button>
+                  </ion-segment>
+
+                  @if(vehicleCategory === "commercial"){
+                    <div>
+
+                      <ion-row>
+                        <div class="vehicle-cat-toggle-container">
+                          Enable  <ion-toggle [checked]="getIsCommercialEnabled()" (ionChange)="updateTruckForm('truck.isPublic', $event.detail.checked)"></ion-toggle>
+                        </div>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-input 
+                          #bedLengthField 
+                          fill="outline" 
+                          type="number"
+                          label="Bed Length (mm)" 
+                          labelPlacement="floating" 
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.bedSize?.lengthMm)"
+                          (keyup)="updateTruckForm('truck.bedSize.lengthMm',  parseFloat((bedLengthField.value || '0').toString()))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.lengthMm"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.lengthMm"
+                          (ionBlur)="formErrorsTruck().truck?.bedSize?.lengthMm && showFieldErrorsTruck($event.target)"
+                          [disabled]="!getIsCommercialEnabled() || truck != null"
+                          [value]="truck?.bedSize.lengthMm ?? ''"
+                          >
+                        </ion-input>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-input 
+                          #bedWidthField 
+                          fill="outline" 
+                          type="number"
+                          label="Bed Width (mm)" 
+                          labelPlacement="floating" 
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.bedSize?.widthMm)"
+                          (keyup)="updateTruckForm('truck.bedSize.widthMm',  parseInt((bedWidthField.value || '0').toString()))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.widthMm"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.widthMm"
+                          (ionBlur)="formErrorsTruck().truck?.bedSize?.widthMm && showFieldErrorsTruck($event.target)"
+                          [disabled]="!getIsCommercialEnabled() || truck != null"
+                          [value]="truck?.bedSize.widthMm ?? ''"
+                          >
+                        </ion-input>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-input 
+                          #bedHeightField 
+                          fill="outline" 
+                          type="number"
+                          label="Bed Height (mm)" 
+                          labelPlacement="floating" 
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.bedSize?.heightMm)"
+                          (keyup)="updateTruckForm('truck.bedSize.heightMm',  parseInt((bedHeightField.value || '0').toString()))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.heightMm"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.bedSize?.heightMm"
+                          (ionBlur)="formErrorsTruck().truck?.bedSize?.heightMm && showFieldErrorsTruck($event.target)"
+                          [disabled]="!getIsCommercialEnabled() || truck != null"
+                          [value]="truck?.bedSize.heightMm ?? ''"
+                          >
+                        </ion-input>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-input 
+                          #truckCostField
+                          type="number"
+                          fill="outline" 
+                          label="Cost" 
+                          labelPlacement="floating" 
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.cost)"
+                          (keyup)="updateTruckForm('truck.cost',  parseInt((truckCostField.value || '0').toString()))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.cost"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.cost"
+                          (ionBlur)="formErrorsTruck().truck?.cost && showFieldErrorsTruck($event.target)"
+                          [disabled]="!getIsCommercialEnabled()"
+                          [value]="truck?.cost ?? ''"
+                          >
+                        </ion-input>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-input 
+                          #truckFreightPricePerKmField
+                          type="number"
+                          fill="outline" 
+                          label="Freight Cost Per Km" 
+                          labelPlacement="floating" 
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.freightPricePerKm)"
+                          (keyup)="updateTruckForm('truck.freightPricePerKm',  parseInt((truckFreightPricePerKmField.value || '0').toString()))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.freightPricePerKm"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.freightPricePerKm"
+                          (ionBlur)="formErrorsTruck().truck?.freightPricePerKm && showFieldErrorsTruck($event.target)"
+                          [disabled]="!getIsCommercialEnabled()"
+                          [value]="truck?.freightPricePerKm ?? ''"
+                          >
+                        </ion-input>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-select 
+                          #truckPropertyField 
+                          label="Property" 
+                          label-placement="floating" 
+                          fill="outline" 
+                          interface="popover"
+                          [errorText]="$safeNavigationMigration(formErrorsTruck().truck?.property)"
+                          (ionChange)="updateTruckForm('truck.property',  getTruckPropertyFromPropertyName($event.detail.value))"
+                          [class.ion-touched]="isSubmitAttempted && formErrorsTruck().truck?.property"
+                          [class.ion-invalid]="isSubmitAttempted && formErrorsTruck().truck?.property"
+                          (ionBlur)="formErrorsTruck().truck?.property"
+                          [disabled]="!getIsCommercialEnabled() || getTruckProperty(truck?.property) != null"
+                          [value]="getTruckProperty(truck?.property) ?? ''">
+                          @for(truckProperty of truckPropertiesOptions(); track $index){
+                            <ion-select-option [value]="truckProperty">{{ toTitleCase(truckProperty) }}</ion-select-option>
+                          }
+                        </ion-select>
+                      </ion-row>
+
+                    </div> 
+                  }
+
+                  @if(vehicleCategory === "private"){
+                    <ion-row>
+                      <div class="vehicle-cat-toggle-container">
+                        Enable  <ion-toggle [checked]="getIsPrivateEnabled()" (ionChange)="updateRentalVehicleForm('rentalVehicle.isPublic', $event.detail.checked)"></ion-toggle>
+                      </div>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-input 
+                        #minDaysRentalField
+                        type="number"
+                        fill="outline"
+                        label="Min Days Rental" 
+                        labelPlacement="floating" 
+                        [errorText]="$safeNavigationMigration(formErrorsRentalVehicle().rentalVehicle?.minDaysRental)"
+                        (keyup)="updateRentalVehicleForm('rentalVehicle.minDaysRental',  BigInt((minDaysRentalField.value || '0').toString()))"
+                        [class.ion-touched]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.minDaysRental"
+                        [class.ion-invalid]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.minDaysRental"
+                        (ionBlur)="formErrorsRentalVehicle().rentalVehicle?.minDaysRental && showFieldErrorsRentalVehicle($event.target)"
+                        [disabled]="!getIsPrivateEnabled()"
+                        [value]="rentalVehicle?.minDaysRental ?? ''"
+                        >
+                      </ion-input>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-input 
+                        #dailyRentalCostField 
+                        fill="outline" 
+                        label="Daily Rental Cost" 
+                        labelPlacement="floating" 
+                        [errorText]="$safeNavigationMigration(formErrorsRentalVehicle().rentalVehicle?.dailyRentalCost)"
+                        (keyup)="updateRentalVehicleForm('rentalVehicle.dailyRentalCost',  parseInt((dailyRentalCostField.value  || '0').toString()))"
+                        [class.ion-touched]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.dailyRentalCost"
+                        [class.ion-invalid]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.dailyRentalCost"
+                        (ionBlur)="formErrorsRentalVehicle().rentalVehicle?.dailyRentalCost && showFieldErrorsRentalVehicle($event.target)"
+                        [disabled]="!getIsPrivateEnabled()"
+                        [value]="rentalVehicle?.dailyRentalCost ?? ''"
+                        >
+                      </ion-input>
+                    </ion-row>
+
+                    <ion-row>
+                      <div class="checkbox-option">
+                        <div>
+                          <ion-checkbox 
+                            (ionChange)="updateRentalVehicleForm('rentalVehicle.isDriverMandatory', $event.detail.checked)" 
+                            [checked]="getRentalVehicleDriverRequired()"
+                            [disabled]="!getIsPrivateEnabled()"
+                            [value]="rentalVehicle?.isDriverMandatory ?? ''"
+                            >
+                          </ion-checkbox>
+                        </div>
+                        <div>
+                          Include Driver?
+                        </div>
+                      </div>
+                    </ion-row>
+
+                    @if(getRentalVehicleDriverRequired()){
+                    <ion-row>
+                      <ion-input 
+                        #rentalDriverCostField 
+                        fill="outline" 
+                        label="Driver Cost Per Day" 
+                        labelPlacement="floating" 
+                        [errorText]="$safeNavigationMigration(formErrorsRentalVehicle().rentalVehicle?.driverCost)"
+                        (keyup)="updateRentalVehicleForm('rentalVehicle.driverCost',  parseFloat((rentalDriverCostField.value  || '0').toString()))"
+                        [class.ion-touched]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.driverCost"
+                        [class.ion-invalid]="isSubmitAttempted && formErrorsRentalVehicle().rentalVehicle?.driverCost"
+                        (ionBlur)="formErrorsRentalVehicle().rentalVehicle?.driverCost && showFieldErrorsRentalVehicle($event.target)"
+                        [disabled]="!getIsPrivateEnabled()"
+                        [value]="rentalVehicle?.driverCost ?? ''"
+                        >
+                      </ion-input>
+                    </ion-row>
+                    }
+                  }
+
+                <ion-row>
+                  <ion-button fill="solid" expand="block" (click)="goToNextSlide( isVehicleFormValid() && (getIsCommercialEnabled() ? isCommercialFormValid() : true) && (getIsPrivateEnabled() ? isPrivateVehicleFormValid() : true) ); isSubmitAttempted = true;">Next</ion-button>
+                </ion-row>
+            </ion-grid>
+          </div>
+        </swiper-slide>
+
+        @if(getIsCommercialEnabled()){
+          <swiper-slide>
+            <div>
+              <h4>Select Enrollment</h4>
+            </div>
+            <div class="product-service-options">
+              <ion-grid>
+                <ion-row class="ion-justify-content-center">
+                    @switch (getCommercialProperty()) {
+                      @case (FreightTruckProperty.CRANE)
+                      @case (FreightTruckProperty.FLATBED)
+                      @case (FreightTruckProperty.DROPSIDE)
+                      @case (FreightTruckProperty.STANDARD_BED)
+                      @case (FreightTruckProperty.TIPPER) 
+                      @case (FreightTruckProperty.FREEZER)
+                      @case (FreightTruckProperty.STANDARD_BOX)
+                      @case (FreightTruckProperty.REFRIGERATED){
+                        <!-- Freight
+                        Solid Waste
+                        Water Purified
+                        Water Unpurified
+                        Coconut
+                        Cooking Gas
+                        Honey -->
+                        @for(standardCommercialCard of standardCommercialCards; track $index)
+                        {
+                          <ion-col size="6" size-md="4">
+                            <ion-card class="ion-activatable ripple-parent" (click)="toggleEnrollmentSelection(standardCommercialCard.orderType)" [class.product-service-option-selected]="selectedEnrollments[standardCommercialCard.orderType]">
+                              <div class="product-service-options--image">
+                                <img [src]="standardCommercialCard.image" class="animate-image"/>
+                              </div>
+                              <div class="product-service-options--label">
+                                <ion-text>{{ standardCommercialCard.label }}</ion-text>
+                              </div>
+                              <ion-ripple-effect></ion-ripple-effect>
+                            </ion-card>
+                          </ion-col>
+                        }
+                        @if(getCommercialProperty() === FreightTruckProperty.REFRIGERATED){
+                          <ion-col size="6" size-md="4">
+                            <ion-card class="ion-activatable ripple-parent" (click)="toggleEnrollmentSelection(OrderTypeCards.EGG.orderType)" [class.product-service-option-selected]="selectedEnrollments[OrderTypeCards.EGG.orderType]">
+                              <div class="product-service-options--image">
+                                <img [src]="OrderTypeCards.EGG.image" class="animate-image"/>
+                              </div>
+                              <div class="product-service-options--label">
+                                <ion-text>{{ OrderTypeCards.EGG.label }}</ion-text>
+                              </div>
+                              <ion-ripple-effect></ion-ripple-effect>
+                            </ion-card>
+                          </ion-col>
+                        }
+
+                        <ion-col size="6" size-md="4"></ion-col>
+                      }
+                      @case (FreightTruckProperty.CESSPOOL) {
+                        <ion-card class="ion-activatable ripple-parent" (click)="toggleEnrollmentSelection(OrderTypeCards.EGG.orderType)" [class.product-service-option-selected]="selectedEnrollments[OrderTypeCards.EGG.orderType]">
+                          <div class="product-service-options--image">
+                            <img [src]="OrderTypeCards.CESSPOOL.image" class="animate-image"/>
+                          </div>
+                          <div class="product-service-options--label">
+                            <ion-text>{{ OrderTypeCards.CESSPOOL.label }}</ion-text>
+                          </div>
+                          <ion-ripple-effect></ion-ripple-effect>
+                        </ion-card>
+                      }
+                    }
+                </ion-row>
+              </ion-grid>
+            </div>
+
+            <ion-button fill="solid" expand="block" (click)="goToNextSlide(getSelectedEnrollmentsLength() > 0)" [disabled]="getSelectedEnrollmentsLength() === 0">Next</ion-button>
+            <ion-button fill="solid" expand="block" (click)="goToPreviousSlide()">Prev</ion-button>
+          </swiper-slide>
+        }
+        <swiper-slide class="schedule-slide">
+          <div class="swiper-slide-inner-container">.
+            Schedule
+
+            @for(timeslot of getJobTimeslots(); track $index; let i = $index){
+              <div class="time-cards-container">
+                <ion-card class="ion-activatable ripple-parent">
+                  @if(getJobTimeslots().length > 1){
+                    <div class="time-card-header">
+                      <ion-icon name="close-circle-outline" color="danger" (click)="removeJobTimeslot(i)"></ion-icon>
+                    </div>
+                  }
+                  <div class="time-selection-row">
+                    <ion-input
+                      label="Start HH" 
+                      type="number"
+                      label-placement="stacked"
+                      placeholder="00 to 23"
+                      fill="outline"
+                      min="0" 
+                      max="23"
+                      maxlength="2"
+                      [errorText]="formErrorsJobTimeslot().jobTimeslots?.at(i).startHH"
+                      (keyup)="updateJobTimeslotForm(i, 'startHH', $event)"
+                      [class.ion-touched]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).startHH"
+                      [class.ion-invalid]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).startHH"
+                      (ionBlur)="formErrorsJobTimeslot().jobTimeslots?.at(i).startHH && showFieldErrorsJobTimeslot($event.target)"
+                      [value]="timeslot.startHH">
+                    </ion-input> :
+                    <ion-input 
+                      label="Start MM" 
+                      type="number"
+                      label-placement="stacked"
+                      placeholder="00 to 59"
+                      fill="outline"
+                      min="0" 
+                      max="59"
+                      maxlength="2"
+                      [errorText]="formErrorsJobTimeslot().jobTimeslots?.at(i).startMM"
+                      (keyup)="updateJobTimeslotForm(i, 'startMM', ($event))"
+                      [class.ion-touched]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).startMM"
+                      [class.ion-invalid]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).startMM"
+                      (ionBlur)="formErrorsJobTimeslot().jobTimeslots?.at(i).startMM && showFieldErrorsJobTimeslot($event.target)"
+                      [value]="timeslot.startMM">
+                    </ion-input>
+                  </div>
+                  <div class="time-selection-row-to">
+                    TO
+                  </div>
+                  <div class="time-selection-row">
+                    <ion-input 
+                      label="End HH" 
+                      type="number"
+                      label-placement="stacked"
+                      placeholder="00 to 23" 
+                      fill="outline"
+                      maxlength="2"
+                      [errorText]="formErrorsJobTimeslot().jobTimeslots?.at(i).endHH"
+                      (keyup)="updateJobTimeslotForm(i, 'endHH', $event)"
+                      [class.ion-touched]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).endHH"
+                      [class.ion-invalid]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).endHH"
+                      (ionBlur)="formErrorsJobTimeslot().jobTimeslots?.at(i).endHH && showFieldErrorsJobTimeslot($event.target)"
+                      [value]="timeslot.endHH">
+                    </ion-input> :
+                    <ion-input 
+                      label="End MM" 
+                      type="number"
+                      label-placement="stacked"
+                      placeholder="00 to 59"
+                      fill="outline"
+                      maxlength="2"
+                      [errorText]="formErrorsJobTimeslot().jobTimeslots?.at(i).endMM"
+                      (keyup)="updateJobTimeslotForm(i, 'endMM', $event)"
+                      [class.ion-touched]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).endMM"
+                      [class.ion-invalid]="isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).endMM"
+                      (ionBlur)="formErrorsJobTimeslot().jobTimeslots?.at(i).endMM && showFieldErrorsJobTimeslot($event.target)"
+                      [value]="timeslot.endMM">
+                    </ion-input>
+                  </div>
+                  <div class="time-selection-weekday-options-container">
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.SUNDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(0)"
+                      ></ion-checkbox> Sun
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.MONDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(1)"
+                      ></ion-checkbox> Mon
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.TUESDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(2)"
+                      ></ion-checkbox> Tue
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.WEDNESDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(3)"
+                      ></ion-checkbox> Wed
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.THURSDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(4)"
+                      ></ion-checkbox> Thu
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.FRIDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(5)"
+                      ></ion-checkbox> Fri
+                    </div>
+                    <div class="time-selection-weekday-option">
+                      <ion-checkbox
+                        (ionChange)="updateJobTimeslotForm(i, 'weekdays', $event, Weekdays.SATURDAY.toString())"
+                        [checked]="timeslot.weekdays.includes(6)"
+                      ></ion-checkbox> Sat
+                    </div>
+                    @if(isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).weekdays){
+                      <ion-text color="danger">Weekday option is required</ion-text>
+                    }
+                  </div>
+                </ion-card>
+              </div>
+            }
+
+
+            <div style="height: 50px;"></div>
+
+            <ion-button fill="solid" expand="block" type="submit" [disabled]="isSubmitting">{{ vehicle === null ? 'Submit' : 'Save' }}</ion-button>
+            <ion-button fill="solid" expand="block" (click)="goToPreviousSlide()">Prev</ion-button>
+
+            <ion-fab>
+              <ion-fab-button (click)="addJobTimeslot()">
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+  </form>
+
+</ion-content>

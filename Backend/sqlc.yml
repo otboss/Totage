@@ -1,0 +1,65 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "modules/order/infrastructure/order.query.sql"
+    schema: 
+      - "modules/**/domain/entities/*.schema.sql"
+      - "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "modules/order/infrastructure"
+        sql_package: "pgx/v5"
+
+  - engine: "postgresql"
+    queries: "modules/logistic/infrastructure/logistic.query.sql"
+    schema: 
+      - "modules/**/domain/entities/*.schema.sql"
+      - "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "modules/logistic/infrastructure"
+        sql_package: "pgx/v5"
+
+  - engine: "postgresql"
+    queries: "modules/organization/infrastructure/organization.query.sql"
+    schema: 
+      - "modules/**/domain/entities/*.schema.sql"
+      - "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "modules/organization/infrastructure"
+        sql_package: "pgx/v5"
+
+  - engine: "postgresql"
+    queries: "modules/user/infrastructure/user.query.sql"
+    schema: 
+      - "modules/**/domain/entities/*.schema.sql"
+      - "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "modules/user/infrastructure"
+        sql_package: "pgx/v5"
+
+  - engine: "postgresql"
+    queries: "modules/payment/infrastructure/payment.query.sql"
+    schema: 
+      - "modules/**/domain/entities/*.schema.sql"
+      - "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "modules/payment/infrastructure"
+        sql_package: "pgx/v5"
+
+  - engine: "postgresql"
+    queries: "shared/infrastructure/shared.query.sql"
+    schema: "shared/domain/entities/shared.schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "shared/infrastructure"
+        sql_package: "pgx/v5"

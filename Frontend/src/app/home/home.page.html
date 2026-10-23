@@ -1,0 +1,48 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>home</ion-title>
+    <ion-buttons slot="end" class="toolbar-actions">
+      <!-- <ion-button> End </ion-button> -->
+       <div class="header-icons">
+         <img class="flag-icon" [src]="regionFlag"/>
+         <ion-icon name="person-circle-outline"></ion-icon>
+       </div>
+      <ion-select aria-label="menu" interface="popover" [(ngModel)]="myValue" (ionChange)="onChange($event)">
+        @if(isLoggedIn()){
+          <ion-select-option value="orders">My Orders</ion-select-option>
+          <ion-select-option value="dashboard">Go to Dashboard</ion-select-option>
+          <ion-select-option value="signIn">Change Region</ion-select-option>
+          <ion-select-option value="signOut">Sign Out</ion-select-option>
+        } @else {
+          <ion-select-option value="signIn">Change Region</ion-select-option>
+          <ion-select-option value="signIn">Sign In</ion-select-option>
+        }
+      </ion-select>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="swiper-container">
+    <swiper-container #swiper space-between="30" slides-per-view="1" auto-height="true" class="swiper-no-swiping">
+      <swiper-slide>
+        <app-start (output)="handleOrderTypeSelected($event)"></app-start>
+      </swiper-slide>
+      <swiper-slide>
+        <app-order-details [orderType]="selectedOrderType" [image]="selectedOrderTypeImage" [label]="selectedOrderTypeLabel" (goPreviousSlide)="previousSlide()" (goNextSlide)="nextSlide()" ></app-order-details>
+      </swiper-slide>
+      <swiper-slide>
+        <app-results [orderType]="selectedOrderType" (goPreviousSlide)="previousSlide()" (goNextSlide)="nextSlide()" [input]="getOrderDetails()" (output)="selectedTruck = $event"></app-results>
+      </swiper-slide>
+      <swiper-slide>
+        <app-location></app-location>
+      </swiper-slide>
+      <swiper-slide>
+        <app-job-date></app-job-date>
+      </swiper-slide>
+      <swiper-slide>
+        <app-checkout></app-checkout>
+      </swiper-slide>
+    </swiper-container>
+  </div>
+</ion-content>

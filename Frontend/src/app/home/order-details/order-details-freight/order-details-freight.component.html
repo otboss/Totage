@@ -1,0 +1,164 @@
+<form #form>
+  <ion-grid>
+  
+    <ion-row class="truck-type-list">
+      <ion-segment value="freight" mode="ios" (ionChange)="setSubcategory($event.detail.value)">
+        <ion-segment-button value="freight">
+          <ion-label>Freight</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="solid-waste">
+          <ion-label>Solid Waste</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="liquid-waste">
+          <ion-label>Liquid Waste</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <div class="pickup-field-container">
+        <ion-input 
+          #pickupAddressField
+          fill="outline"
+          label="Enter pickup address"
+          labelPlacement="floating"
+          [errorText]="formErrors().pickupAddress"
+          [value]="formValues().pickupAddress"
+          clearInput="true"
+          (keyup)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          (ionChange)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          [class.ion-touched]="isSubmitAttempted() && formErrors().pickupAddress"
+          [class.ion-invalid]="isSubmitAttempted() && formErrors().pickupAddress"
+          (ionBlur)="formErrors().pickupAddress && showFieldErrors($event.target)">
+        </ion-input>
+        <ion-icon id="open-modal" icon="location-outline" color="primary"></ion-icon> 
+      </div>
+
+      @if(isFetchingFreightTruckClasses === true){
+        <div class="truck-classes-loading-indicator-container">
+          <ion-spinner name="lines-sharp"></ion-spinner>
+        </div>
+      } @else {
+        
+        @if((pickupAddressField.value.toString()?.length ?? 0) > 0 && freightTruckClasses !== undefined && (freightTruckClasses?.length ?? 0) === 0){
+          <!-- TODO: Fix design of this-->
+          <div>
+            <div>
+              
+            </div>
+            <div>
+              <span>No trucks found in your area</span>
+            </div>
+          </div>
+        }
+
+        @if((pickupAddressField.value.toString()?.length ?? 0) === 0 || (freightTruckClasses?.length ?? 0) > 0){
+          <div class="truck-type-result-slides-container">
+              <swiper-container class="truck-type-result-slides" slides-per-view="1" auto-height="true" navigation="true" style="width: calc(100vw - 40px);" (swiperslidechange)="setSelectedVehicleClass($event)">
+                @for (vehicle of getSupportedVehicleClasses(); track $index) {
+                  <swiper-slide>
+                    <div class="truck-type-result-slide">
+                      <ion-card>
+                        <img [src]="vehicle.image"/>
+                        <div>
+                          <span>{{ vehicle.label }}</span>
+                        </div>
+                      </ion-card>
+                    </div>
+                  </swiper-slide>            
+                }
+              </swiper-container>
+          </div>
+        }
+      }
+    </ion-row>
+  
+    @if((pickupAddressField.value.toString()?.length ?? 0) === 0 || (freightTruckClasses?.length ?? 0) > 0){
+      @if(!isFetchingFreightTruckClasses && subcategory !== 'liquid-waste' && getSupportedVehicleClasses()[selectedVehicleClassIndex] !== undefined && getSupportedVehicleClasses()[selectedVehicleClassIndex]?.type === "CLOSED"){
+        <ion-row>
+          <ion-radio-group class="radio-selector-container" [value]="freightTruckProperty.UNSPECIFIED" (ionChange)="handleTruckPropertyChange($event)">
+          <div class="row-option">
+              <h4>Properties</h4>
+            </div>
+            @for(vehicleProperty of getSupportedVehicleProperties(getSupportedVehicleClasses()[selectedVehicleClassIndex].class); track $index){
+              @switch (vehicleProperty) {
+                @case (freightTruckProperty.UNSPECIFIED) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.UNSPECIFIED"></ion-radio>
+                    <div>None</div>
+                  </div>
+                }
+                @case (freightTruckProperty.REFRIGERATED) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.REFRIGERATED"></ion-radio>
+                    <div>Refrigeration</div>
+                  </div>
+                }
+                @case (freightTruckProperty.FREEZER) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.FREEZER"></ion-radio>
+                    <div>Freezer</div>
+                  </div>
+                }
+              }
+            }
+          </ion-radio-group>
+        </ion-row>
+      }
+    
+      @if(!isFetchingFreightTruckClasses && subcategory !== 'liquid-waste' && getSupportedVehicleClasses()[selectedVehicleClassIndex] !== undefined && getSupportedVehicleClasses()[selectedVehicleClassIndex].type === "OPEN"){
+        <ion-row>
+          <ion-radio-group [value]="freightTruckProperty.UNSPECIFIED" class="radio-selector-container" (ionChange)="handleTruckPropertyChange($event)">
+            <div class="row-option">
+              <h4>Attachment</h4>
+            </div>          
+
+            @for(vehicleProperty of getSupportedVehicleProperties(getSupportedVehicleClasses()[selectedVehicleClassIndex].class); track $index){
+              @switch (vehicleProperty) {
+                @case (freightTruckProperty.UNSPECIFIED) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.UNSPECIFIED"></ion-radio>
+                    <div>None</div>
+                  </div>
+                }
+                @case (freightTruckProperty.TIPPER) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.TIPPER"></ion-radio>
+                    <div>Tipper</div>
+                  </div>
+                }
+                @case (freightTruckProperty.CRANE) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.CRANE"></ion-radio>
+                    <div>Crane</div>
+                  </div>
+                }
+                @case (freightTruckProperty.BUCKET) {
+                  <div class="row-option">
+                    <ion-radio [value]="freightTruckProperty.BUCKET"></ion-radio>
+                    <div>Bucket</div>
+                  </div>
+                }
+              }
+            }
+          </ion-radio-group>
+        </ion-row>
+      }
+    }
+  
+  </ion-grid>
+</form>
+
+<ion-modal #modal trigger="open-modal" [initialBreakpoint]="0.25" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+
+  <div class="location-select-options">
+    <div class="location-select-heading">
+      <h5>Select Location</h5>
+    </div>
+
+    <div>
+      <ion-button expand="block" shape="round" (click)="setCurrentUserCoordinates(); modal.dismiss()">Use Current Location</ion-button>
+    </div>
+    <div>
+      <ion-button expand="block" shape="round" fill="clear" color="primary" (click)="navigateToLocationSelector(); modal.dismiss()">Select On Map</ion-button>
+    </div>
+  </div>
+  
+</ion-modal>

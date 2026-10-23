@@ -1,0 +1,57 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <!-- Only shows if a previous route exists in the stack -->
+      <ion-back-button [defaultHref]="dashboardPage"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Configure @switch (selectedOrderType) {
+      @case (orderType.FREIGHT) {
+        Freight
+      }
+      @case (orderType.WATER_PURIFIED) {
+        Water Potable
+      }
+      @case (orderType.WATER_UNPURIFIED) {
+        Water Unpurified
+      }
+      @case (orderType.EGG) {
+        Eggs
+      }
+    }</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @switch (selectedOrderType) {
+    @case (orderType.FREIGHT) {
+      <app-add-edit-freight></app-add-edit-freight>
+    }
+    @case (orderType.EGG) {
+      <app-add-edit-egg></app-add-edit-egg>
+    }
+    @case (orderType.WATER_PURIFIED) {
+      <app-add-edit-water-purified></app-add-edit-water-purified>
+    }
+    @case (orderType.WATER_UNPURIFIED) {
+      <app-add-edit-water-unpurified></app-add-edit-water-unpurified>
+    }
+    @case (orderType.ICE) {
+      <app-add-edit-ice></app-add-edit-ice>
+    }
+    @case (orderType.BLOCK) {
+      <app-add-edit-block></app-add-edit-block>
+    }
+    @case (orderType.CHARCOAL) {
+      <app-add-edit-charcoal></app-add-edit-charcoal>
+    }
+    @case (orderType.COCONUT) {
+      <app-add-edit-coconut></app-add-edit-coconut>
+    }
+    @case(orderType.CONSTRUCTION){
+      <app-add-edit-construction></app-add-edit-construction>
+    }
+    @case (orderType.HONEY) {
+      <app-add-edit-honey></app-add-edit-honey>
+    }
+  }
+</ion-content>

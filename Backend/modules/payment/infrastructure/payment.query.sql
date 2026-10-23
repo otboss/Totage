@@ -1,0 +1,2 @@
+-- name: GetBitcoinPayment :one
+SELECT;

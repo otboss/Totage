@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package shared;
+
+import "shared/api/currency.proto";
+import "shared/api/freight_truck_class.proto";
+import "buf/validate/validate.proto";
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+
+message Truck {
+    int64 id = 1;
+    int64 vehicle_id = 13;
+    BedSize bedSize = 2;
+    shared.FreightTruckClass class = 14;
+    shared.FreightTruckProperty property = 4;
+    // bool hasFreezer = 5;
+    // bool hasTipper = 6;
+    // bool hasRefrigerator = 7;
+    // bool hasCesspoolDetachable = 16;
+    // bool hasCesspoolFixed = 17;
+    // bool hasBucket = 8;
+    // bool hasCrane = 9;
+    float freightPricePerKm = 3;
+    float cost = 11;
+    
+    bool isPublic = 15;
+}
+
+// enum TruckAttachment {
+//     TRUCK_ATTACHMENT_UNSPECIFIED = 0;
+//     TIPPER = 1;
+//     FREEZER = 2;
+//     REFRIGERATOR = 3;
+//     BUCKET = 4;
+//     CRANE = 5;
+//     CESSPOOL_FIXED = 6;
+//     CESSPOOL_DETACHABLE = 7;
+// }
+
+message TruckCreate {
+    BedSize bedSize = 2;
+    // bool hasFreezer = 5;
+    // bool hasTipper = 6;
+    // bool hasRefrigerator = 7;
+    // bool hasCesspoolDetachable = 13;
+    // bool hasCesspoolFixed = 14;
+    // bool hasBucket = 8;
+    // bool hasCrane = 9;
+    shared.FreightTruckProperty property = 1 [
+        (buf.validate.field).cel = {
+            id: "property.range",
+            message: "Property is required",
+            expression: "this > 0"
+        }
+    ];
+    float freightPricePerKm = 3 [
+        (buf.validate.field).cel = {
+            id: "freightPricePerKm.range",
+            message: "Invalid value provided",
+            expression: "this >= 0.0"
+        }
+    ];
+    float cost = 11 [
+        (buf.validate.field).cel = {
+            id: "cost.range",
+            message: "Invalid value provided",
+            expression: "this >= 0.0"
+        }
+    ];
+    bool isPublic = 12;
+
+    message BedSize {
+        float lengthMm = 11 [
+            (buf.validate.field).cel = {
+                id: "lengthMm.range",
+                message: "Invalid value provided",
+                expression: "this > 0.0"
+            }
+        ];
+        float widthMm = 21 [
+            (buf.validate.field).cel = {
+                id: "widthMm.range",
+                message: "Invalid value provided",
+                expression: "this > 0.0"
+            }
+        ];
+        optional float heightMm = 3 [
+            (buf.validate.field).cel = {
+                id: "cost.range",
+                message: "Invalid value provided",
+                expression: "this >= 0.0"
+            }
+        ];
+    }
+}
+
+message BedSize {
+    float lengthMm = 1;
+    float widthMm = 2;
+    optional float heightMm = 3;
+}

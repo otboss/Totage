@@ -1,0 +1,715 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <!-- Only shows if a previous route exists in the stack -->
+      <ion-back-button [defaultHref]="dashboardPage"></ion-back-button>
+    </ion-buttons>
+    <ion-title></ion-title>
+    <ion-buttons slot="end" class="toolbar-actions">
+      <ion-icon name="settings-outline" (click)="goToSettings()"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if(organization === null){
+    <ion-spinner name="dots"></ion-spinner>
+  } @else {
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresherRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <div class="organization-page-container">
+      <div class="organization-desc">
+        <div class="organization-logo-container">
+    
+        </div>
+        <div>
+          {{ getOrganization()?.organization.organizationName ?? "" }}
+        </div>
+        <div class="organization-desc--rating">
+                    @for (num of [1, 2, 3, 4, 5]; track num) {
+                      @if(isHalfRating(organization.rating, num)){
+                        <ion-icon name="star-half" color="warning"></ion-icon>
+                      }
+                      @else if(organization.rating >= num){
+                        <ion-icon name="star" color="warning"></ion-icon>
+                      } 
+                      @else{
+                        <ion-icon name="star-outline" color="warning"></ion-icon>
+                      }
+                    }
+          <!-- <ion-icon name="star-outline"></ion-icon>
+          <ion-icon name="star-outline"></ion-icon>
+          <ion-icon name="star-outline"></ion-icon>
+          <ion-icon name="star-outline"></ion-icon>
+          <ion-icon name="star-outline"></ion-icon> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="tabs-container">
+      <div class="tabs">
+        <div>
+          Accounts
+        </div>
+        <div>
+          Vehicles
+        </div>
+        <div>
+          Order Types
+        </div>
+      </div>
+    </div> -->
+    <ion-segment [scrollable]="true" value="Accounts" (ionChange)="setCurrentTab($event)">
+      <ion-segment-button value="Accounts" (click)="isSearchOn = false; accounts = undefined; refreshAccounts()">
+        <ion-icon name="people-outline"></ion-icon>
+        <!-- <ion-label>Accounts</ion-label> -->
+      </ion-segment-button>
+      <ion-segment-button value="Vehicles" (click)="isSearchOn = false; vehicles = undefined; refreshVehicles()">
+        <ion-icon name="car-outline"></ion-icon>
+        <!-- <ion-label>Vehicles</ion-label> -->
+      </ion-segment-button>
+      <ion-segment-button value="Categories" (click)="isSearchOn = false">
+        <ion-icon name="library-outline"></ion-icon>
+        <!-- <ion-label>Categories</ion-label> -->
+      </ion-segment-button>
+      <ion-segment-button value="Payment" (click)="isSearchOn = false">
+        <ion-icon name="card-outline"></ion-icon>
+        <!-- <ion-label>Payment</ion-label> -->
+      </ion-segment-button>
+      <ion-segment-button value="Orders" (click)="isSearchOn = false; orders = undefined; refreshOrders()">
+        <ion-icon name="basket-outline"></ion-icon>
+        <!-- <ion-label>Orders</ion-label> -->
+      </ion-segment-button>
+    </ion-segment>
+    
+  <!-- <ion-content style="height: 60px;">
+    <ion-tabs #myTabs (ionTabsDidChange)="setCurrentTab()">
+      <ion-tab tab="accounts">
+      </ion-tab>
+      <ion-tab tab="vehicles">
+      </ion-tab>
+      <ion-tab tab="categories">
+      </ion-tab>
+      <ion-tab tab="payment">
+      </ion-tab>
+      <ion-tab tab="orders">
+      </ion-tab>
+    
+      <ion-tab-bar slot="top">
+        <ion-tab-button tab="accounts">
+          <ion-icon name="people-outline"></ion-icon>
+          Accounts
+        </ion-tab-button>
+        <ion-tab-button tab="vehicles">
+          <ion-icon name="car-outline"></ion-icon>
+          Vehicles
+        </ion-tab-button>
+        <ion-tab-button tab="categories">
+          <ion-icon name="library-outline"></ion-icon>
+          Categories
+        </ion-tab-button>
+        <ion-tab-button tab="payment">
+          <ion-icon name="card-outline"></ion-icon>
+          Payment
+        </ion-tab-button>
+        <ion-tab-button tab="orders">
+          <ion-icon name="basket-outline"></ion-icon>
+          Orders
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-content> -->
+
+  <ion-content class="tab-contents" style="max-height: calc(100vh - 300px);">
+
+    @if(isSearchOn){
+      <ion-searchbar [placeholder]="'Search '+activeTabName" autofocus="true" showClearButton="true" (ionChange)="filterText = $event.detail.value"></ion-searchbar>
+    }
+
+    @if(activeTabName == undefined || activeTabName == "Accounts"){
+      @if(isSearchOn == false){
+        <div class="tab-heading">
+          <div class="tab-heading-text">
+            <h6>Accounts</h6>
+          </div>
+          <div class="tab-heading-search-icon">
+            <ion-icon name="refresh-outline" (click)="refreshAccounts()"></ion-icon>
+            <ion-icon name="search-outline" (click)="isSearchOn = true"></ion-icon>
+          </div>
+        </div>
+      }
+
+      @if(isFetchingAccounts){
+
+      }
+      @if(accounts !== undefined && isFetchingAccounts === false){
+        @for(account of accounts.accounts; track $index){
+          <ion-card class="ion-activatable ripple-parent account-card" (click)="editAccount(account)">
+            <div class="organization-logo">
+              <div class="account-image-border">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+            </div>
+            <div class="account-card-desc">
+              <div>
+                <ion-text class="account-card--name">{{ account.firstName + " " + account.lastName }}</ion-text>
+              </div>
+              <div>
+                <ion-text > {{ account.isAdmin ? "Admin" : "" }} </ion-text>
+              </div>
+              <div>
+                <ion-text >{{ account.email }}</ion-text>
+              </div>
+            </div>
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-card>
+        }
+      }
+
+      <!-- <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">John Doe</ion-text>
+          </div>
+          <div>
+            <ion-text >Admin</ion-text>
+          </div>
+          <div>
+            <ion-text >johndoe@gmail.com</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+
+      <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">John Doe</ion-text>
+          </div>
+          <div>
+            <ion-text >Admin</ion-text>
+          </div>
+          <div>
+            <ion-text >johndoe@gmail.com</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+
+      <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">John Doe</ion-text>
+          </div>
+          <div>
+            <ion-text >Admin</ion-text>
+          </div>
+          <div>
+            <ion-text >johndoe@gmail.com</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card> -->
+
+      <ion-fab (click)="createAccount()">
+        <ion-fab-button>
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
+
+    @if(activeTabName == "Vehicles"){
+      @if(isSearchOn == false){
+        <div class="tab-heading">
+          <div class="tab-heading-text">
+            <h6>Vehicles</h6>
+          </div>
+          <div class="tab-heading-search-icon">
+            <ion-icon name="refresh-outline" (click)="refreshVehicles()"></ion-icon>
+            <ion-icon name="search-outline" (click)="isSearchOn = true"></ion-icon>
+          </div>
+        </div>
+      }
+
+
+      @if(isFetchingVehicles === true){
+        <ion-spinner name="dots"></ion-spinner>
+      }
+      @else {
+        @if(vehicles === undefined){
+          <!-- TODO: ERROR: DURING FETCHING-->
+          Error occurred during fetching vehicles
+        }
+        @if(vehicles.vehicles.length === 0){
+          Nothing to show here
+        }
+        @else {
+          <div class="vehicle-cards-container">
+          @for(vehicle of vehicles.vehicles; track $index){
+            <ion-card class="ion-activatable ripple-parent account-card"(click)="goToEditVehiclePage(vehicle)">
+              <div class="organization-logo">
+                <div class="account-image-border">
+                  <ion-icon name="car-outline"></ion-icon>
+                </div>
+              </div>
+              <div class="account-card-desc">
+                <div>
+                  <ion-text class="account-card--name">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</ion-text>
+                </div>
+                <div>
+                  <ion-text >{{ vehicle.licensePlateNumber }}</ion-text>
+                </div>
+              </div>
+              <ion-ripple-effect></ion-ripple-effect>
+            </ion-card>
+          }
+          </div>
+        }
+      }
+
+      <!-- <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="car-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">2015 Toyota Toyoace</ion-text>
+          </div>
+          <div>
+            <ion-text >CT 3245</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card> -->
+
+
+      <ion-fab (click)="goToAddVehiclePage()">
+        <ion-fab-button>
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    }
+
+    @if(activeTabName == "Categories"){
+      @if(isSearchOn == false){
+        <div class="tab-heading">
+          <div class="tab-heading-text">
+            <!-- <h6>Services</h6> -->
+          </div>
+          <div class="tab-heading-search-icon">
+            <ion-icon name="search-outline" (click)="isSearchOn = true"></ion-icon>
+          </div>
+        </div>
+      }
+
+       <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.FREIGHT)">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="albums-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">Freight</ion-text>
+          </div>
+          <div>
+            <ion-text >Not Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+<!--
+      <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.CESSPOOL)">
+        <div class="organization-logo">
+          <div class="coconut-image-border">
+            <img [src]="cesspoolImage"/>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">CESSPOOL</ion-text>
+          </div>
+          <div>
+            <ion-text >Not Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card> -->
+
+      <!-- <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.VEHICLE_RENTAL)">
+        <div class="organization-logo">
+          <div class="account-image-border">
+            <ion-icon name="car-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">Vehicle Rental</ion-text>
+          </div>
+          <div>
+            <ion-text >Not Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card> -->
+
+      <!-- <h6>Bulk Goods</h6> -->
+      <div class="configuration-items">
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.WATER_PURIFIED)">
+          <div class="organization-logo">
+            <div class="account-image-border">
+              <ion-icon name="water-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Water (Potable)</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card"  (click)="navigateToAddEdit(OrderType.WATER_UNPURIFIED)">
+          <div class="organization-logo">
+            <div class="account-image-border">
+              <ion-icon name="water-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Water (Non-potable)</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.EGG)">
+          <div class="organization-logo">
+            <div class="account-image-border">
+              <ion-icon name="egg-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Eggs</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.ICE)">
+          <div class="organization-logo">
+            <div class="account-image-border">
+              <ion-icon name="cube-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Ice</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.COCONUT)">
+          <div class="organization-logo">
+            <div class="coconut-image-border">
+              <!-- <ion-icon name="car-outline"></ion-icon> -->
+              <img [src]="coconutImage"/>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Coconuts</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.BLOCK)">
+          <div class="organization-logo">
+            <div class="coconut-image-border">
+              <!-- <ion-icon name="car-outline"></ion-icon> -->
+              <img [src]="cinderBlockImage"/>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Cinder Blocks</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.CHARCOAL)">
+          <div class="organization-logo">
+            <div class="coconut-image-border">
+              <!-- <ion-icon name="car-outline"></ion-icon> -->
+              <img [src]="charcoalImage"/>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Charcoal</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+
+        <ion-card class="ion-activatable ripple-parent account-card" (click)="navigateToAddEdit(OrderType.HONEY)">
+          <div class="organization-logo">
+            <div class="coconut-image-border">
+              <!-- <ion-icon name="car-outline"></ion-icon> -->
+              <img [src]="honeyImage"/>
+            </div>
+          </div>
+          <div class="account-card-desc">
+            <div>
+              <ion-text class="account-card--name">Honey</ion-text>
+            </div>
+            <div>
+              <ion-text >Not Configured</ion-text>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card>
+      </div>
+
+    }
+
+    @if(activeTabName == "Payment"){
+      @if(isSearchOn == false){
+        <div class="tab-heading">
+          <div class="tab-heading-text">
+            <h6>Payment Methods</h6>
+          </div>
+          <div class="tab-heading-search-icon">
+            <ion-icon name="search-outline" (click)="isSearchOn = true"></ion-icon>
+          </div>
+        </div>
+      }
+      <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="payment-method-logo">
+          <div class="account-image-border">
+            <ion-icon name="logo-paypal"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">Paypal</ion-text>
+          </div>
+          <div>
+            <ion-text class="configured-text">Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+
+      <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="payment-method-logo">
+          <div class="account-image-border">
+            <ion-icon name="logo-bitcoin"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">Bitcoin (Lightning)</ion-text>
+          </div>
+          <div>
+            <ion-text >Not Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+
+      <ion-card class="ion-activatable ripple-parent account-card">
+        <div class="payment-method-logo">
+          <div class="account-image-border">
+            <ion-icon name="logo-bitcoin"></ion-icon>
+          </div>
+        </div>
+        <div class="account-card-desc">
+          <div>
+            <ion-text class="account-card--name">Bitcoin</ion-text>
+          </div>
+          <div>
+            <ion-text >Not Configured</ion-text>
+          </div>
+        </div>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-card>
+
+    }
+
+    @if(activeTabName == "Orders"){
+      @if(isSearchOn == false){
+        <div class="tab-heading">
+          <div class="tab-heading-text">
+            <h6>Orders</h6>
+          </div>
+          <div class="tab-heading-search-icon">
+            <ion-icon name="search-outline" (click)="isSearchOn = true"></ion-icon>
+          </div>
+        </div>
+      }
+
+      @if(isFetchingOrders === true){
+        <ion-spinner name="dots"></ion-spinner>
+      }
+      @else {
+        @if(orders === undefined){
+          <!-- TODO: ERROR: DURING FETCHING-->
+          Error occurred during fetching orders
+        }
+        @if(orders.orders.length === 0){
+          Nothing to show here
+        }
+        @else {
+          @for(order of orders.orders; track $index){
+            <ion-card class="ion-activatable ripple-parent account-card"(click)="goToOrderDetailsPage(order.orderId)">
+              <div class="organization-logo">
+                <div class="account-image-border">
+                  <ion-icon name="car-outline"></ion-icon>
+                </div>
+              </div>
+              <div class="account-card-desc">
+                <div>
+                  <ion-text class="account-card--name">{{ order.orderType }}</ion-text>
+                </div>
+                <div>
+                  <ion-text >{{ order.paymentDate }}</ion-text>
+                </div>
+                <div>
+                  <ion-text >{{ order.totalInUsd }}</ion-text>
+                </div>
+              </div>
+              <ion-ripple-effect></ion-ripple-effect>
+            </ion-card>
+          }
+        }
+      }
+    }
+
+      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+
+    </ion-content>
+
+    <!-- <div class="order-type-section-header">
+      <div>
+        <span>Vehicles</span>
+      </div>
+      <div>
+        <ion-button size="small">Add</ion-button>
+      </div>
+    </div>
+    <div class="order-types-container">
+
+
+          <ion-card class="ion-activatable ripple-parent order-type-card">
+            <div class="organization-logo">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+            <div>
+              <div>
+                <ion-text >Vehicle Rental</ion-text>
+              </div>
+              <div>
+                <ion-text >Members: 5</ion-text>
+              </div>
+              <div>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+              </div>
+            </div>
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-card>
+
+
+    </div> -->
+    
+    <!-- <div class="order-type-section-header">
+      <div>
+        <span>Order Types</span>
+      </div>
+      <div>
+        <ion-button size="small">Add</ion-button>
+      </div>
+    </div>
+    <div class="order-types-container">
+
+
+          <ion-card class="ion-activatable ripple-parent order-type-card">
+            <div class="organization-logo">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+            <div>
+              <div>
+                <ion-text >Vehicle Rental</ion-text>
+              </div>
+              <div>
+                <ion-text >Members: 5</ion-text>
+              </div>
+              <div>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+                <ion-icon name="star-outline"></ion-icon>
+              </div>
+            </div>
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-card>
+
+
+    </div>
+
+    <div>
+
+    </div> -->
+  }
+</ion-content>

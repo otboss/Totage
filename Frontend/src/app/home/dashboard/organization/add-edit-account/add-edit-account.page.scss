@@ -1,0 +1,11 @@
+.role-select-container{
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.role-select-option{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

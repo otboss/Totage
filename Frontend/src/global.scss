@@ -1,0 +1,70 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+
+
+ion-card {
+  box-shadow: none !important;
+  /* Optional: Add a border if you want a flat look instead */
+  border: 1px solid #ddd;
+  margin: 0;
+}
+
+ion-searchbar {
+  --box-shadow: none;       /* Removes the shadow (Material Design) */
+  --border-radius: 0;       /* Makes it rectangular instead of rounded */
+  --background: transparent; /* Optional: makes it blend with the parent */
+}
+
+ion-content {
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+ion-input.error-color {
+  --color: #ff4961; /* Force specific text color */
+  --placeholder-color: #ddd; /* Optional: style placeholder */
+  --placeholder-opacity: 0.8;
+  --highlight-color-unfocused: #ff4961;
+  --highlight-color-focused: #ff4961; /* Focus color */
+  --highlight-color-valid: #ff4961;   /* Valid state color */
+  --highlight-color-invalid: #eb445a; /* Invalid state color */
+  --border-color: #ff4961;
+}

@@ -1,0 +1,13 @@
+version: v1
+# Define the name of your module (update this line)
+name: buf.build/otboss/buf
+
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/bufbuild/protovalidate
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT

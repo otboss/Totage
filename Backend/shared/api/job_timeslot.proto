@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package shared;
+
+import "buf/validate/validate.proto";
+import "shared/api/weekdays.proto";
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+message JobTimeslot {
+    // Correct: Cross-field rules live at the message level
+//     option (buf.validate.message).cel = {
+//         id: "job_timeslot.end_mm.valid_range", // We keep your ID here
+//         message: "End time must be strictly after start time",
+//         expression: "(this.endHH * 60 + this.endMM) > (this.startHH * 60 + this.startMM)",
+//     };
+
+    optional int32 startHH = 1 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).int32.gte = 0,
+        (buf.validate.field).int32.lte = 23
+    ];
+    optional int32 startMM = 2 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).int32.gte = 0,
+        (buf.validate.field).int32.lte = 59
+    ];
+    optional int32 endHH = 3 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).int32.gte = 0,
+        (buf.validate.field).int32.lte = 23
+    ];
+    optional int32 endMM = 4 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).int32.gte = 0,
+        (buf.validate.field).int32.lte = 59
+    ];
+    repeated shared.Weekdays weekdays = 5 [(buf.validate.field).repeated.min_items = 1];
+}

@@ -1,0 +1,28 @@
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <h5>Choose Job Date</h5>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col class="calendar-container">
+      <ion-datetime presentation="date"></ion-datetime>
+    </ion-col>
+  </ion-row>
+  <ion-row class="fill-row">
+    <ion-col>
+      <div class="time-options">
+        <ion-chip [outline]="true" color="primary">8:00 am</ion-chip>
+        <ion-chip [outline]="true" color="primary">8:00 am</ion-chip>
+        <ion-chip [outline]="true" color="primary">8:00 am</ion-chip>
+        <ion-chip [outline]="true" color="primary">8:00 am</ion-chip>
+      </div>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col class="page-nav-buttons">
+      <ion-button><ion-icon name="chevron-back-outline"></ion-icon>Prev</ion-button>
+      <ion-button>Next<ion-icon name="chevron-forward-outline"></ion-icon></ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

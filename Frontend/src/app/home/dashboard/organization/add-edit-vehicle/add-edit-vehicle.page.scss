@@ -1,0 +1,179 @@
+ion-grid {
+    padding-bottom: 40px;
+}
+
+.vehicle-details-section{
+    padding: 20px 0 10px 0;
+}
+
+.checkbox-option{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+ion-grid ion-row {
+    padding: 10px 0;
+}
+
+.truck-features-section{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vehicle-cat-toggle-container{
+    display: flex;
+    gap: 10px;
+    padding: 10px 0 0px 0;
+}
+
+.driver-row{
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid lightgray;
+}
+
+.header-action-icons{
+    display: flex;
+    padding: 0 20px 0 0;
+    font-size: 20px;
+}
+
+.schedule-slide{
+    min-height: calc(100vh - 100px);
+    // background-color: red;
+    position: relative; 
+}
+
+
+.schedule-slide ion-fab{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+.schedule-slide ion-fab-button {
+  --box-shadow: none;
+}
+
+.schedule-slide .time-selection-row{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 18px;
+}
+
+.schedule-slide ion-card{
+    border: 1px solid lightgray;
+    padding: 20px;
+    color: rgb(60, 60, 60);
+}
+
+.time-selection-row-to{
+    text-align: center;
+    padding: 10px 0;
+}
+
+.time-cards-container{
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.time-selection-weekday-options-container{
+    padding-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.time-selection-weekday-option{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+ion-checkbox {
+  --border-color: #ababab;         /* Outline color when unchecked */
+  --border-color-checked: #808080;   /* Outline color when checked */
+}
+
+swiper-container {
+  width: 100%;
+  height: auto;
+}
+
+swiper-slide {
+  height: auto;
+  overflow-y: auto; // Enables vertical scrolling inside the slide
+  display: block;    // Prevents flexbox vertical squishing/centering issues
+  box-sizing: border-box;
+}
+
+ion-fab {
+    position: fixed;
+}
+
+.product-service-options{
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    // padding-top: 20px;
+}
+
+.swiper-slide-inner-container{
+    max-height: calc(100vh - 96px);
+    overflow: auto;
+}
+
+.product-service-option-selected {
+    border: 1px solid var(--ion-color-primary);
+}
+
+.product-service-options ion-card{
+    cursor: pointer;
+    // width: 100%;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+}
+ion-col{
+    padding: 10px;
+}
+
+
+.product-service-options--label{
+    display: flex;
+    justify-content: center;
+    font-size: 16px;
+    padding: 20px 10px;
+    text-align: center;
+    // color: var(--ion-color-secondary);
+}
+
+.product-service-options--image{
+    display: flex;
+    justify-content: center;
+    padding: 20px 20px 0 20px;
+    flex: 1;
+}
+
+.product-service-options--image img {
+    max-height: 80px;
+}
+
+.time-card-header{
+    display: flex;
+    justify-content: right;
+    font-size: 24px;
+    padding-bottom: 20px;
+}
+
+.time-card-header ion-icon {
+    cursor: pointer;
+}

@@ -1,0 +1,116 @@
+ion-grid {
+    height: 100%;
+}
+
+.truck-type-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.truck-type-list ion-card{
+    width: 100%;
+    padding: 10px;
+}
+
+.pickup-field-container{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 70px;
+    padding-top: 10px;
+}
+
+.pickup-field-container ion-icon {
+    font-size: 28px;
+}
+
+.truck-card{
+    display: flex;
+    min-height: 80px;
+}
+
+.truck-type-image-container{
+    width: 80px;
+}
+
+.truck-details-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.truck-type-result-slides{
+    // height: 100px;
+}
+
+.truck-type-result-slides ion-card {
+    border: none;
+    padding: 0;
+}
+
+.truck-type-result-slide img {
+    width: 90px;
+}
+
+.truck-type-result-slide{
+    padding: 0 50px;
+}
+
+.truck-type-result-slide ion-card {
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 0;
+    gap: 5px;
+}
+
+.truck-type-result-slides-container{
+    // background-color: red;
+    padding: 10px 0 ;
+    position: relative;
+}
+
+.radio-selector-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 0px;
+}
+
+.row-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+// .location-select-heading{
+
+// }
+
+.location-select-options{
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    padding: 10px;
+    gap: 10px;
+}
+
+.location-select-options ion-button{
+    // width: 100%;
+    // max-width: 500px;
+}
+
+.truck-classes-loading-indicator-container{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+.truck-classes-loading-indicator-container ion-spinner {
+    width: 40px;
+    height: 40px;
+}

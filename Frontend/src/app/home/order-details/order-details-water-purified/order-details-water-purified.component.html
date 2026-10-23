@@ -1,0 +1,33 @@
+<ion-grid>
+  
+  <ion-row class="unit-container">
+    <span>5 Gallon Bottle</span>
+  </ion-row>
+
+  <ion-row class="content-row">
+    <ion-select label="Quantity" label-placement="floating" fill="outline" interface="popover">
+      <ion-select-option value="1">1</ion-select-option>
+      <ion-select-option value="2">2</ion-select-option>
+      <ion-select-option value="3">3</ion-select-option>
+    </ion-select>
+
+   <ion-radio-group class="bottles-option-container" value="strawberries">
+      <div class="bottles-option">
+        <div>
+          <ion-radio value="true"></ion-radio>    
+        </div>
+        <div>
+          I do not have my own bottles
+        </div>
+      </div>
+      <div class="bottles-option">
+        <div>
+          <ion-radio value="false"></ion-radio>    
+        </div>
+        <div>
+          I have my own bottles
+        </div>
+      </div>
+    </ion-radio-group>
+  </ion-row>
+</ion-grid>

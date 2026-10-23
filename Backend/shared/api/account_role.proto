@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package shared;
+
+import "buf/validate/validate.proto";
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+
+message AccountRoles {
+    bool isAdmin = 1;
+    bool isDriver = 2;
+    bool isCustomerSupport = 3;
+}

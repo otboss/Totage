@@ -1,0 +1,19 @@
+<html>
+Dear Customer,
+<br/>
+<br/>
+A new order has been received! See the details below:
+<br/>
+<br/>
+<br/>
+<pre style="font-size: 14px;">
+${YAML.stringify(orderCopy, { indent: 4 }).split("\n").join("\n\n")}
+</pre>
+Once the order delivery has been completed open the following link to clear the order from the order queue:
+<br/>
+<br/>
+${environment.BACKEND_URL}/${routes.completeDelivery}/${order.id}
+<br/>
+<br/>
+Regards.
+</html>

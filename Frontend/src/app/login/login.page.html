@@ -1,0 +1,41 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Welcome</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div>
+    <h4>Log in to access your account</h4>
+  </div>
+  <form class="form-fields" (submit)="onSubmit()">
+    <ion-button expand="full" color="light" class="google-button" (click)="loginWithGoogle()">
+      <img [src]="googleLogo"/>&nbsp;&nbsp;Continue with Google
+      <!-- <ion-icon name="logo-google"></ion-icon> -->
+    </ion-button>
+    <div class="or-text-container">
+      Or
+    </div>
+    <ion-input label="Email" label-placement="floating" fill="outline" placeholder="Enter text"></ion-input>
+    <!-- <ion-input label="Password" label-placement="floating" fill="outline" placeholder="Enter text"></ion-input> -->
+    <!-- <div>
+      <span>Forgot Password?</span>
+    </div> -->
+    <ion-button expand="full">Continue</ion-button>
+    <!-- <ion-button expand="full" fill="clear">Create Account</ion-button> -->
+  </form>
+  <!-- <div class="other-actions-desc">
+    or
+  </div> -->
+  <!-- <div class="sso-buttons">
+    <ion-button expand="full">
+      <ion-icon name="logo-google"></ion-icon>
+    </ion-button>
+  </div> -->
+  <div class="legal-disclamer">
+    By proceeding , you agree to the <a (click)="goToTermsOfServicePage()">Terms of Service</a> and <a (click)="goToPrivacyPolicyPage()">Privacy Policy</a>
+  </div>
+</ion-content>

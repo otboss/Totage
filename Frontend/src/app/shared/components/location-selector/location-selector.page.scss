@@ -1,0 +1,17 @@
+.center-marker{
+    position: fixed;
+    left: calc(50% - 10px);
+    top: 50%;
+    z-index: 10000;
+    font-size: 30px;
+    opacity: 0.7;
+}
+
+.select-button-container{
+    position: fixed;
+    bottom: 40px;
+    width: 100%;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+}

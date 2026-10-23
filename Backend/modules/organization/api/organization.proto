@@ -1,0 +1,687 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "shared/api/order_type.proto";
+import "shared/api/truck.proto";
+import "shared/api/weekdays.proto";
+import "shared/api/country.proto";
+import "shared/api/currency.proto";
+import "shared/api/account_role.proto";
+import "shared/api/pagination.proto";
+import "shared/api/job_timeslot.proto";
+
+import "buf/validate/validate.proto";
+import "google/type/date.proto";
+
+option go_package = "waterordersystem/GOBACKEND/modules/organization/api;endpoints";
+
+
+service OrganizationService {
+    rpc CreateOrganizationHandler(CreateOrganizationCommand) returns (CreateOrganizationResponse);
+
+    rpc DeleteOrganizationHandler (DeleteOrganizationCommand) returns (DeleteOrganizationResponse);
+    rpc GetOrganizationsHandler (GetOrganizationsQuery) returns (GetOrganizationsResponse);
+    rpc GetOrganizationHandler (GetOrganizationQuery) returns (GetOrganizationResponse);
+    rpc ApproveOrganizationHandler (ApproveOrganizationCommand) returns (ApproveOrganizationResponse);
+
+    // rpc CreateJobTimeslotHandler (CreateJobTimeslotCommand) returns (CreateJobTimeslotResponse);
+    // rpc DeleteJobTimeslotHandler (DeleteJobTimeslotCommand) returns (DeleteJobTimeslotResponse);
+    // rpc GetJobTimeslotHandler (GetJobTimeslotQuery) returns (GetJobTimeslotResponse);
+
+    rpc CreateAccountHandler (CreateAccountCommand) returns (CreateAccountResponse);
+    rpc GetAccountHandler (GetAccountQuery) returns (GetAccountResponse);
+    rpc GetAccountsHandler (GetAccountsQuery) returns (GetAccountsResponse);
+    rpc UpdateAccountHandler (UpdateAccountCommand) returns (UpdateAccountResponse);
+    rpc GetDriversHandler (GetDriversQuery) returns (GetDriversResponse);
+
+    rpc UpdateFreightConfigHandler (UpdateFreightConfigCommand) returns (UpdateFreightConfigResponse);
+    rpc UpdatePotableWaterSalesConfigHandler (UpdatePotableWaterSalesConfigCommand) returns (UpdatePotableWaterSalesConfigResponse);
+    rpc UpdateIrrigationWaterSalesConfigHandler (UpdateIrrigationWaterSalesConfigCommand) returns (UpdateIrrigationWaterSalesConfigResponse);
+    rpc UpdateBlockSalesConfigHandler (UpdateBlockSalesConfigCommand) returns (UpdateBlockSalesConfigResponse);
+    rpc UpdateCoconutSalesConfigHandler (UpdateCoconutSalesConfigCommand) returns (UpdateCoconutSalesConfigResponse);
+    rpc UpdateEggSalesConfigHandler (UpdateEggSalesConfigCommand) returns (UpdateEggSalesConfigResponse);
+    rpc UpdateCharcoalSalesConfigHandler (UpdateCharcoalSalesConfigCommand) returns (UpdateCharcoalSalesConfigResponse);
+    rpc UpdateIceSalesConfigHandler (UpdateIceSalesConfigCommand) returns (UpdateIceSalesConfigResponse);
+    rpc UpdateHoneySalesConfigHandler (UpdateHoneySalesConfigCommand) returns (UpdateHoneySalesConfigResponse);
+
+    rpc GetFreightConfigHandler (GetFreightConfigQuery) returns (GetFreightConfigResponse);
+    rpc GetIrrigationWaterSalesConfigHandler (GetIrrigationWaterSalesConfigQuery) returns (GetIrrigationWaterSalesConfigResponse);
+    rpc GetPotableWaterSalesConfigHandler (GetPotableWaterSalesConfigQuery) returns (GetPotableWaterSalesConfigResponse);
+    rpc GetIceSalesConfigHandler (GetIceSalesConfigQuery) returns (GetIceSalesConfigResponse);
+    rpc GetBlockSalesConfigHandler (GetBlockSalesConfigQuery) returns (GetBlockSalesConfigResponse);
+    rpc GetCoconutSalesConfigHandler (GetCoconutSalesConfigQuery) returns (GetCoconutSalesConfigResponse);
+    rpc GetEggSalesConfigHandler (GetEggSalesConfigQuery) returns (GetEggSalesConfigResponse);
+    rpc GetCharcoalSalesConfigHandler (GetCharcoalSalesConfigQuery) returns (GetCharcoalSalesConfigResponse);
+    rpc GetHoneySalesConfigHandler (GetHoneySalesConfigQuery) returns (GetHoneySalesConfigResponse);
+
+    rpc VerifyAccountHandler (VerifyAccountCommand) returns (VerifyAccountResponse);
+    rpc VerifyAccountOAuthHandler (VerifyAccountOAuthCommand) returns (VerifyAccountOAuthResponse);
+
+    rpc AddInstagramHandleHandler (AddInstagramHandleCommand) returns (AddInstagramHandleResponse);
+    rpc DeleteInstagramHandleHandler (DeleteInstagramHandleCommand) returns (DeleteInstagramHandleResponse);
+
+    rpc VerifyEmailAndPhoneHandler (VerifyEmailAndPhoneCommand) returns (VerifyEmailAndPhoneResponse);
+
+    // rpc GetSalesUnitsHandler (GetSalesUnitsQuery) returns (GetSalesUnitsResponse);
+}
+
+message JwtOrganization {
+    string accountId = 1; 
+    int64 createdAt = 2;
+}
+
+message CreateOrganizationCommand {
+    optional int64 organizationId = 1 [
+        (buf.validate.field).cel = {
+            id: "organization_id.gte_1",
+            message: "Invalid organization id",
+            expression: "!has(this) || this >= 1"
+        }
+    ];
+    // string logo = 18;
+    string organizationName = 2 [
+        (buf.validate.field).cel = {
+            id: "organization_name.required",
+            message: "Organization name is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "organization_name.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    string address = 7 [
+        (buf.validate.field).cel = {
+            id: "address.required",
+            message: "Address is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "address.max_len",
+            message: "Max field length exceeded",
+            expression: "this.size() <= 255"
+        }
+    ];
+    string phone = 13 [
+        (buf.validate.field).cel = {
+            id: "phone.required",
+            message: "Phone number is required",
+            expression: "this.size() > 0"
+        },
+        (buf.validate.field).cel = {
+            id: "phone.invalid_format",
+            message: "Invalid phone number",
+            expression: "this.matches(r'^\\+[1-9]\\d{1,14}$')"
+        }
+    ];
+    string email = 14 [(buf.validate.field).cel = {
+        id: "email.required",
+        expression: "this == '' ? 'This field is required' : (this.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$') ? '' : 'Invalid email address')"
+    }];
+    shared.CountryCodeAlpha3 country = 17 [
+        (buf.validate.field).cel = {
+            id: "country.invalid_code",
+            message: "Invalid country code",
+            expression: "this != 0"
+        }
+    ];
+    shared.Currency currency = 18 [
+        (buf.validate.field).cel = {
+            id: "currency.invalid_code",
+            message: "Invalid currency code",
+            expression: "this != 0"
+        }
+    ];
+    double dutyFreeKm = 22 [
+        (buf.validate.field).cel = {
+            id: "duty_free_km.gte_0",
+            message: "Must be greater than or equal to 0",
+            expression: "this >= 0.0"
+        }
+    ];
+    optional int64 maxOrderQueueSize = 16 [
+        (buf.validate.field).cel = {
+        id: "max_order_queue_size.invalid",
+        message: "Invalid max queue size",
+        expression: "!has(this) || this > 0"
+        }
+    ];
+    optional bool submitForApproval = 21;
+    optional PaypalMerchantDetails paypalMerchantDetails = 11;
+    repeated BankAccountConfig bankAccountDetails = 12;
+
+    message PotableWaterDeliveryConfig {
+        double waterCost = 1;
+        double bottleCost = 4;
+        double minimumJobCost = 5;
+        double maxDutyFreeDistanceKm = 6;
+        double dutyCostPerKm = 7;
+        bool isEnabled = 8;
+    }
+
+    message IrrigationWaterDeliveryConfig {
+        double waterCost = 1;
+        double barrelCost = 4;
+        double minimumJobCost = 5;
+        double maxDutyFreeDistanceKm = 6;
+        double dutyCostPerKm = 7;
+        bool isEnabled = 8;
+    }
+
+    message FreightConfig {
+        double minimumJobCost = 1;
+        // double maxDutyFreeDistanceKm = 2;
+        // double dutyCostPerKm = 3;
+        bool isEnabled = 3;
+    }
+
+    message BlockDeliveryConfig {
+        double minimumJobCost = 1;
+        // double maxDutyFreeDistanceKm = 2;
+        double dutyCostPerKm = 3;
+        double blockCost = 4;
+        bool isEnabled = 5;
+    }
+
+    message EggDeliveryConfig {
+        double minimumJobCost = 1;
+        // double maxDutyFreeDistanceKm = 2;
+        double dutyCostPerKm = 3;
+        double eggCost = 4;
+        bool isEnabled = 5;
+    }
+
+    message CoconutDeliveryConfig {
+        double minimumJobCost = 1;
+        // double maxDutyFreeDistanceKm = 2;
+        double dutyCostPerKm = 3;
+        double coconutCost = 4;
+        bool isEnabled = 5;
+    }
+
+    message BankAccountConfig {
+        string bank = 1;
+        string branch = 2;
+        string accountName = 3;
+        string accountNumber = 4;
+        AccountType accountType = 5;
+        AccountOwnership accountOwnership = 6;
+
+        enum AccountType {
+            SAVINGS = 0;
+            CHECKING = 1;
+        }
+
+        enum AccountOwnership {
+            BUSINESS = 0;
+            PERSONAL = 1;
+        }
+    }
+
+    // message VehicleRentalConfig {
+    // }
+}
+
+message CreateOrganizationResponse {
+    int64 organizationId = 1;
+}
+
+message DeleteOrganizationCommand {
+    int64 organizationId = 1;
+}
+
+message DeleteOrganizationResponse {
+}
+
+message GetOrganizationsQuery {
+    shared.Pagination pagination = 2;
+}
+
+message GetOrganizationsResponse {
+    repeated Organization organizations = 1;
+    int64 accountCount = 2;
+
+    message Organization {
+        int64 organizationId = 1;
+        string organizationName = 2;
+        optional string avatarUrl = 3;
+        int64 rating = 4;
+        int64 memberCount = 5;
+        bool isApproved = 6;
+    }
+}
+
+message GetOrganizationQuery {
+    int64 organizationId = 1;
+}
+
+message GetOrganizationResponse {
+    CreateOrganizationCommand organization = 1;
+    optional string PaypalClientId = 2;
+    // bool isApproved = 3;
+    int64 rating = 4;
+}
+
+// message CreateJobTimeslotCommand {
+//     shared.JobTimeslot jobTimeslot = 1;
+//     int64 organizationId = 2;
+//     shared.OrderType orderType = 3;
+// }
+
+// message CreateJobTimeslotResponse {
+//     int64 jobTimeslotId = 1;
+// }
+
+// message DeleteJobTimeslotCommand {
+//     int64 organizationId = 1 [(buf.validate.field).int64.gte = 1];
+//     shared.OrderType orderType = 3;
+// }
+
+// message DeleteJobTimeslotResponse {
+
+// }
+
+// message GetJobTimeslotQuery {
+//     int64 organizationId = 1 [(buf.validate.field).int64.gte = 1];
+//     shared.OrderType orderType = 3;
+// }
+
+// message GetJobTimeslotResponse {
+//     shared.JobTimeslot jobTimeslot = 1;
+// }
+
+message PaypalMerchantDetails {
+    string subscriptionId = 1;
+}
+
+enum SupportedOrder {
+    VEHICLE_RENTAL = 0;
+    FREIGHT = 1;
+    WATER_PURIFIED = 2;
+    WATER_UNPURIFIED = 3;
+    WATER = 5;
+    BLOCK = 6;
+    COCONUT = 7;
+    EGG = 8;
+}
+
+message CreateAccountCommand {
+    string email = 1;
+    int64 organizationId = 2; 
+    shared.AccountRoles roles = 3;
+}
+
+message CreateAccountResponse {
+    string accountId = 1;
+}
+
+message VerifyAccountCommand {
+    string accountId = 1;
+}
+
+message VerifyAccountResponse {
+}
+
+message VerifyAccountOAuthCommand {
+    string googleAuthenticationCode = 3;
+}
+
+message VerifyAccountOAuthResponse {
+}
+
+
+message GetAccountQuery {
+    string accountId = 1;
+    int64 organizationId = 2;
+}
+
+message GetAccountResponse {
+    Account account = 1;
+}
+
+message GetAccountsQuery {
+    int64 organizationId = 1;
+    shared.Pagination pagination = 2;
+}
+
+message GetAccountsResponse {
+    repeated Account accounts = 1;
+}
+
+message UpdateAccountCommand {
+    string accountId = 1;
+    shared.AccountRoles roles = 3;
+}
+
+message UpdateAccountResponse {
+
+}
+
+message GetDriversQuery {
+    int64 organizationId = 1;
+    shared.Pagination pagination = 2;
+}
+
+message GetDriversResponse {
+    repeated Account drivers = 1;
+}
+
+message UpdateFreightConfigCommand {
+    int64 organizationId = 1;
+    optional double solidWasteDumpSiteLatitude = 2; // TODO: Add validation
+    optional double solidWasteDumpSiteLongitude = 3;
+    optional double liquidWasteDumpSiteLatitude = 4;
+    optional double liquidWasteDumpSiteLongitude = 5;
+    bool isEnabled = 6;
+}
+
+message UpdateFreightConfigResponse {
+
+}
+
+message UpdatePotableWaterSalesConfigCommand {
+    int64 organizationId = 1;
+    double waterPriceMin = 2;
+    double waterPricePerKm = 3;
+    double waterPrice = 4;
+    double bottleCost = 5;
+    double availableSupply = 6;
+    double minOrderQuantity = 7;
+    bool isEnabled = 8;
+}
+
+message UpdatePotableWaterSalesConfigResponse {
+
+}
+
+message UpdateIrrigationWaterSalesConfigCommand {
+    int64 organizationId = 1;
+    float waterPriceMin = 2;
+    float waterPricePerKm = 3;
+    float waterPrice = 4;
+    optional double barrelCost = 5;
+    double availableSupply = 6;
+    double minOrderQuantity = 7;
+    bool isEnabled = 8;
+}
+
+message UpdateIrrigationWaterSalesConfigResponse {
+
+}
+
+message UpdateBlockSalesConfigCommand {
+    int64 organizationId = 1;
+    double blockPriceMin = 2;
+    double blockPrice = 3;
+    double blockPricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateBlockSalesConfigResponse {
+
+}
+
+message UpdateCoconutSalesConfigCommand {
+    int64 organizationId = 1;
+    double coconutPriceMin = 2;
+    double coconutPrice = 3;
+    double coconutPricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateCoconutSalesConfigResponse {
+
+}
+
+message UpdateEggSalesConfigCommand {
+    int64 organizationId = 1;
+    double eggPriceMin = 2;
+    double eggPrice = 3;
+    double eggPricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateEggSalesConfigResponse {
+
+}
+
+message UpdateCharcoalSalesConfigCommand {
+    int64 organizationId = 1;
+    double charcoalPriceMin = 2;
+    double charcoalPrice = 3;
+    double charcoalPricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateCharcoalSalesConfigResponse {
+    
+}
+
+message UpdateIceSalesConfigCommand {
+    int64 organizationId = 1;
+    double icePriceMin = 2;
+    double icePrice = 3;
+    double icePricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateIceSalesConfigResponse {
+
+}
+
+message UpdateHoneySalesConfigCommand {
+    int64 organizationId = 1;
+    double honeyPriceMin = 2;
+    double honeyPrice = 3;
+    double honeyPricePerKm = 4;
+    double availableSupply = 5;
+    double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message UpdateHoneySalesConfigResponse {
+
+}
+
+message GetFreightConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetFreightConfigResponse {
+    optional double solidWasteDumpSiteLatitude = 2;
+    optional double solidWasteDumpSiteLongitude = 3;
+    optional double liquidWasteDumpSiteLatitude = 4;
+    optional double liquidWasteDumpSiteLongitude = 5;
+    bool isEnabled = 6;
+}
+
+message GetIrrigationWaterSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetIrrigationWaterSalesConfigResponse {
+    double waterPriceMin = 1;
+    double waterPricePerKm = 2;
+    double waterPrice = 3;
+    optional double barrelCost = 4;
+    double availableSupply = 5;
+    optional double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message GetPotableWaterSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetPotableWaterSalesConfigResponse {
+    double waterPriceMin = 1;
+    double waterPricePerKm = 2;
+    double waterPrice = 3;
+    optional double bottleCost = 4;
+    double availableSupply = 5;
+    optional double minOrderQuantity = 6;
+    bool isEnabled = 7;
+}
+
+message GetIceSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetIceSalesConfigResponse {
+    double icePriceMin = 1;
+    double icePrice = 2;
+    double icePricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message GetBlockSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetBlockSalesConfigResponse {
+    double blockPriceMin = 1;
+    double blockPrice = 2;
+    double blockPricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message GetCoconutSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetCoconutSalesConfigResponse {
+    double coconutPriceMin = 1;
+    double coconutPrice = 2;
+    double coconutPricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message GetEggSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetEggSalesConfigResponse {
+    double eggPriceMin = 1;
+    double eggPrice = 2;
+    double eggPricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message GetCharcoalSalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetCharcoalSalesConfigResponse {
+    double charcoalPriceMin = 1;
+    double charcoalPrice = 2;
+    double charcoalPricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message GetHoneySalesConfigQuery {
+    int64 organizationId = 1;
+}
+
+message GetHoneySalesConfigResponse {
+    double honeyPriceMin = 1;
+    double honeyPrice = 2;
+    double honeyPricePerKm = 3;
+    double availableSupply = 4;
+    optional double minOrderQuantity = 5;
+    bool isEnabled = 6;
+}
+
+message Account {
+    string accountId = 1;
+    int64 userId = 2;
+    string firstName = 3;
+    string lastName = 9;
+    string phone = 4;
+    string email = 5;
+    bool isAdmin = 6;
+    bool isCustomerSupport = 7;
+    bool isDriver = 8;
+}
+
+message ApproveOrganizationCommand {
+    int64 organizationId = 1;
+}
+
+message ApproveOrganizationResponse {
+
+}
+
+message AddInstagramHandleCommand {
+    int64 organizationId = 1;
+    optional string instagramHandle = 2;
+}
+
+message AddInstagramHandleResponse {
+    string verificationCode = 1;
+    bool isVerificationSuccessful = 2;
+    int64 failedAttempts = 3;
+}
+
+message DeleteInstagramHandleCommand {
+    int64 organizationId = 1;
+}
+
+message DeleteInstagramHandleResponse {
+
+}
+
+message VerifyEmailAndPhoneCommand {
+    int64 organizationId = 1;
+
+    optional EmailAndPhoneVerification verificationSession = 4;
+    message EmailAndPhoneVerification {
+        VerificationSession emailVerificationSession = 4;
+        VerificationSession phoneVerificationSession = 5;
+
+        message VerificationSession {
+            string sessionToken = 1;
+            int32 verificationCode = 2;
+        }
+    }
+}
+
+message VerifyEmailAndPhoneResponse {
+    bool isVerificationComplete = 1;
+    string emailVerificationSessionToken = 2;
+    string phoneVerificationSessionToken = 3;
+}
+
+// message GetSalesUnitsQuery {
+//     shared.OrderType orderType = 1;
+//     int64 organizationId = 2;
+// }   
+
+// message GetSalesUnitsResponse {
+//     double unitCost = 1;
+//     shared.OrderType orderType = 2;
+//     repeated int64 quantities = 3;
+//     string unit = 4;
+// }

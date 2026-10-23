@@ -1,0 +1,56 @@
+
+ion-grid{
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+}
+
+.location-fields-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.location-fields-container ion-input {
+    max-width: 500px;
+}
+
+.location-field-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    border: 1px solid color-mix(in srgb, var(--ion-color-primary), white 50%);
+    border-radius: 10px;
+    padding: 1px 10px 1px 1px;
+}
+
+.location-field-container{
+    flex: 1;
+}
+
+.location-field-row ion-input {
+    --border-style: none;
+}
+
+.location-field-row img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.location-field-row ion-button {
+    // width: 100%;
+}
+
+.fill-row {
+  flex: 1;
+}
+
+.actions-row{
+    display: flex;
+    justify-content: flex-end;
+}

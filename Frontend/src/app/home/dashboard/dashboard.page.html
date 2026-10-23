@@ -1,0 +1,128 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    @if(!isSearchActive){
+      <ion-title>Dashboard</ion-title>
+      <ion-buttons slot="end" class="toolbar-actions">
+        <!-- <ion-button> End </ion-button> -->
+        <div class="invites-container">
+          <ion-icon name="mail-outline" (click)="viewInvitations()"></ion-icon>
+          <ion-badge color="danger">.</ion-badge>
+        </div>
+        <ion-icon name="search-outline" (click)="isSearchActive = true"></ion-icon>
+        <ion-icon name="exit-outline" (click)="goHome()"></ion-icon>
+      </ion-buttons>
+    } @else {
+      <div class="search-tools">
+        <ion-searchbar autofocus="true" placeholder="Search Organizations"></ion-searchbar>
+        <ion-icon name="close-outline" (click)="isSearchActive = false"></ion-icon>
+      </div>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresherRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="dashboard-desc">
+    <div>
+      <span>Your Organizations</span>
+    </div>
+    <div>
+      
+      <!-- <ion-searchbar></ion-searchbar> -->
+    </div>
+  </div>
+
+  <div class="organizations-container">
+    <ion-grid>
+      <ion-row class="ion-hide-sm-down">
+
+
+
+      </ion-row>
+      <ion-row class="ion-hide-md-up">
+
+
+        @if((organizations?.organizations ?? []).length === 0 && isFetchingOrganizations === false){
+          Nothing to show here
+        }
+
+        @if(isFetchingOrganizations === true){
+          <ion-spinner name="dots"></ion-spinner>
+        }
+
+        @if(organizations !== undefined && isFetchingOrganizations === false){
+          @for(organization of organizations.organizations; track $index){
+            <ion-card class="ion-activatable ripple-parent organization-card-md" (click)="goToOrganization($event, organization)">
+              <div class="organization-logo">
+                <!-- TODO: Implement logos-->
+                <ion-icon name="business-outline"></ion-icon>
+              </div>
+              <div class="organization-desc">
+                <div>
+                  <!-- TODO: Apply ellipses for long organization names-->
+                  <div class="organization-desc--name-container">
+                    <div class="organization-desc--name">
+                      <ion-text class="organization-desc--title">{{ organization.organizationName }}</ion-text>
+                    </div>
+                    @if(organization.isApproved == false){
+                      <ion-icon class="organization-desc--pending-icon" name="hourglass-outline" color="warning"></ion-icon>
+                    }
+                  </div>
+                </div>
+                <div>
+                  <ion-text class="organization-desc--member-cnt">Members: {{ organization.memberCount }} </ion-text>
+                </div>
+                <div class="organization-desc--rating">
+                  @for (num of [1, 2, 3, 4, 5]; track num) {
+                    @if(isHalfRating(organization.rating, num)){
+                      <ion-icon name="star-half" color="warning"></ion-icon>
+                    }
+                    @else if(organization.rating >= num){
+                      <ion-icon name="star" color="warning"></ion-icon>
+                    } 
+                    @else{
+                      <ion-icon name="star-outline" color="warning"></ion-icon>
+                    }
+                  }
+                </div>
+              </div>
+              <ion-ripple-effect></ion-ripple-effect>
+            </ion-card>
+          }
+        }
+        
+        <!-- <ion-card class="ion-activatable ripple-parent organization-card-md" (click)="goToOrganization($event)">
+          <div class="organization-logo">
+             <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <div class="organization-desc">
+            <div>
+              <ion-text class="organization-desc--title">Vehicle Rental</ion-text>
+            </div>
+            <div>
+              <ion-text class="organization-desc--member-cnt">Members: 5</ion-text>
+            </div>
+            <div class="organization-desc--rating">
+              <ion-icon name="star-outline"></ion-icon>
+              <ion-icon name="star-outline"></ion-icon>
+              <ion-icon name="star-outline"></ion-icon>
+              <ion-icon name="star-outline"></ion-icon>
+              <ion-icon name="star-outline"></ion-icon>
+            </div>
+          </div>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-card> -->
+
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <ion-fab (click)="createOrganization()">
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,78 @@
+<p id="open-modal">
+  add-edit-freight works!
+</p>
+<app-location-selection-modal></app-location-selection-modal>
+
+<!-- <ion-content [fullscreen]="true">
+  <form #form (submit)="onSubmit()">
+    <ion-grid>
+
+      <ion-row>
+        <div class="vehicle-cat-toggle-container">
+          Enable  <ion-toggle [checked]="getIsEnabled()" (ionChange)="updateForm('isEnabled', $event.detail.checked)"></ion-toggle>
+        </div>
+      </ion-row>
+
+      <ion-row>
+        <ion-input
+          #waterPriceMinField 
+          fill="outline" 
+          label="Minimum Water Price " 
+          labelPlacement="floating" 
+          [errorText]="formErrors().waterPriceMin"
+          (keyup)="updateForm('waterPriceMin',parseFloat(  waterPriceMinField.value.toString()))"
+          [class.ion-touched]="isSubmitAttempted && formErrors().waterPriceMin"
+          [class.ion-invalid]="isSubmitAttempted && formErrors().waterPriceMin"
+          (ionBlur)="formErrors().waterPriceMin && showFieldErrors($event.target)">
+        </ion-input>
+      </ion-row>
+
+      <ion-row>
+        <ion-input 
+          #waterPricePerGallonField 
+          fill="outline" 
+          label="Water Price Per Gallon" 
+          labelPlacement="floating" 
+          [errorText]="formErrors().waterPrice"
+          (keyup)="updateForm('waterPriceMin',parseFloat(  waterPricePerGallonField.value.toString()))"
+          [class.ion-touched]="isSubmitAttempted && formErrors().waterPrice"
+          [class.ion-invalid]="isSubmitAttempted && formErrors().waterPrice"
+          (ionBlur)="formErrors().waterPrice && showFieldErrors($event.target)">
+        </ion-input>
+      </ion-row>
+
+      <ion-row>
+        <ion-input 
+          #waterPricePerKmField 
+          fill="outline" 
+          label="Water Price Per Km" 
+          labelPlacement="floating" 
+          [errorText]="formErrors().waterPricePerKm"
+          (keyup)="updateForm('waterPriceMin',parseFloat(  waterPricePerKmField.value.toString()))"
+          [class.ion-touched]="isSubmitAttempted && formErrors().waterPricePerKm"
+          [class.ion-invalid]="isSubmitAttempted && formErrors().waterPricePerKm"
+          (ionBlur)="formErrors().waterPricePerKm && showFieldErrors($event.target)">
+        </ion-input>
+      </ion-row>
+
+      <ion-row>
+        <ion-input 
+          #bottleCostField 
+          fill="outline" 
+          label="Bottle Cost" 
+          labelPlacement="floating" 
+          [errorText]="formErrors().bottleCost"
+          (keyup)="updateForm('waterPriceMin',parseFloat(  bottleCostField.value.toString()))"
+          [class.ion-touched]="isSubmitAttempted && formErrors().bottleCost"
+          [class.ion-invalid]="isSubmitAttempted && formErrors().bottleCost"
+          (ionBlur)="formErrors().bottleCost && showFieldErrors($event.target)">
+        </ion-input>
+      </ion-row>
+
+      <ion-row>
+        <ion-button fill="solid" expand="block" type="submit">Save</ion-button>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+</ion-content> -->

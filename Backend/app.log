@@ -1,0 +1,20 @@
+2026/02/13 21:00:50 Error connecting to database failed to connect to `user=admin database=waterordersystem`:
+	[::1]:5432 (localhost): dial error: dial tcp [::1]:5432: connect: connection refused
+	127.0.0.1:5432 (localhost): dial error: dial tcp 127.0.0.1:5432: connect: connection refused
+2026/02/13 21:01:17 Error connecting to database failed to connect to `user=admin database=waterordersystem`:
+	[::1]:5432 (localhost): dial error: dial tcp [::1]:5432: connect: connection refused
+	127.0.0.1:5432 (localhost): dial error: dial tcp 127.0.0.1:5432: connect: connection refused
+2026/03/18 21:55:09 Server failed: listen tcp :8080: bind: address already in use
+2026/03/18 21:55:24 Server failed: listen tcp :8080: bind: address already in use
+2026/04/02 20:49:10 Server failed: listen tcp :8080: bind: address already in use
+2026/04/04 11:20:19 Server failed: listen tcp :8080: bind: address already in use
+2026/04/04 11:20:58 Server failed: listen tcp :8080: bind: address already in use
+2026/04/04 11:21:14 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:43:32 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:43:41 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:44:19 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:44:20 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:44:47 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:44:48 Server failed: listen tcp :8080: bind: address already in use
+2026/06/03 07:50:25 Server failed: listen tcp :8080: bind: address already in use
+2026/06/08 21:10:08 Server failed: listen tcp :8080: bind: address already in use

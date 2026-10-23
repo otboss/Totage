@@ -1,0 +1,17 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="homePage"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Select Location</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="map" style="height: 100%; width: 100%;">
+  </div>
+  <ion-icon class="center-marker" name="location" color="danger"></ion-icon>
+  <div class="select-button-container">
+    <ion-button class="select-button" shape="round" (click)="selectLocation()">Select Here</ion-button>
+  </div>
+</ion-content>

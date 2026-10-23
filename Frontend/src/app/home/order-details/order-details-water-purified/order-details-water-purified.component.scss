@@ -1,0 +1,31 @@
+ion-grid {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.content-row{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.bottles-option-container{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.unit-container{
+    display: flex;
+    justify-content: center;
+    padding: 5px 0 20px 0;
+}
+
+.bottles-option{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

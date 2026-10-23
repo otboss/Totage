@@ -1,0 +1,35 @@
+
+ion-grid{
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-container{
+    display: flex;
+    justify-content: center;
+}
+
+.time-options{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    align-items: flex-start;
+    // justify-content: space-evenly;
+}
+
+.time-options ion-chip{
+    height: 30px;
+}
+
+.fill-row {
+  flex: 1;
+}
+
+.page-nav-buttons{
+    display: flex;
+    // justify-content: space-between;
+    justify-content: flex-end;
+    gap: 5px;
+}

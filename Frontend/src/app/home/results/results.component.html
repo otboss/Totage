@@ -1,0 +1,48 @@
+<div class="fill-parent">
+
+  <ion-grid>
+    
+    <ion-row class="results-container-row">
+
+      @if(!isLoading && !isLoadingErrorEncountered){
+        <div>
+          <h4>Closest Results</h4>
+        </div>
+        <!-- @for(truck of results; track $index){
+
+          <ion-col size="12" size-md="6" class="ion-align-items-start">
+            <ion-card>
+              dd
+            </ion-card>
+          </ion-col>
+        } -->
+      }
+
+      @if(isLoading && !isLoadingErrorEncountered){
+        <ion-col class="loading-spinner-container">
+          <ion-spinner name="lines"></ion-spinner>
+        </ion-col>
+      }
+
+      @if(!isLoading && isLoadingErrorEncountered){
+        <ion-col class="loading-spinner-container">
+          <span>Error occurred while getting results</span>
+          <ion-button (click)="reload()">Retry</ion-button>
+        </ion-col>
+      }
+
+    </ion-row>
+
+  </ion-grid>
+
+  <div class="action-buttons">
+    <ion-button expand="block" fill="clear" color="primary" (click)="goPreviousSlide.emit()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+      BACK
+    </ion-button>
+    <ion-button expand="block" fill="clear" color="primary" (click)="isSubmitted = true; goNextSlide.emit()">
+      NEXT
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+</div>

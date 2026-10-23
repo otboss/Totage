@@ -1,0 +1,33 @@
+      <ion-grid>
+        <ion-row>
+          <h6>Choose desired bulk good or service</h6>
+        </ion-row>
+        <ion-row class="ion-justify-content-center">
+          <div class="product-service-options">
+
+            <ion-grid>
+              <ion-row>
+                <!-- <ion-input label="Email" label-placement="floating" fill="outline" placeholder="Enter text"></ion-input> -->
+                <ion-searchbar></ion-searchbar>
+              </ion-row>
+              <ion-row>
+
+                @for (orderTypeCard of orderTypeCards; track $index) {
+                  <ion-col size="6" size-md="4">
+                    <ion-card class="ion-activatable ripple-parent" (click)="output.emit({orderType: orderTypeCard.orderType, image: orderTypeCard.image, label: orderTypeCard.label})">
+                      <div class="product-service-options--image">
+                        <img [src]="orderTypeCard.image" class="animate-image"/>
+                      </div>
+                      <div class="product-service-options--label">
+                        <ion-text>{{ orderTypeCard.label }}</ion-text>
+                      </div>
+                      <ion-ripple-effect></ion-ripple-effect>
+                    </ion-card>
+                  </ion-col>
+                }
+
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-row>
+      </ion-grid>

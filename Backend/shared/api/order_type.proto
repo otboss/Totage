@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package shared;
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+enum OrderType {
+    VEHICLE_RENTAL = 0;
+    FREIGHT = 1;
+    WATER_PURIFIED = 2;
+    WATER_UNPURIFIED = 3;
+    ICE = 4;
+    BLOCK = 5;
+    COCONUT = 6;
+    EGG = 7;
+    CHARCOAL = 8;
+    COOKING_GAS = 9;
+    HONEY = 10;
+    CESSPOOL = 11;
+    CONSTRUCTION = 12;
+}

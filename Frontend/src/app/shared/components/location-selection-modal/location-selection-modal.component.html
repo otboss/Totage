@@ -1,0 +1,32 @@
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+       <ion-icon name="chevron-back-outline" (click)="cancel()"></ion-icon>
+    </ion-buttons>
+    <ion-title>Select Location</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-item>
+    
+  </ion-item>
+</ion-content> -->
+
+
+<ion-modal #modal trigger="open-modal" [initialBreakpoint]="0.25" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+
+  <div class="location-select-options">
+    <div class="location-select-heading">
+      <h5>Select Location</h5>
+    </div>
+
+    <div>
+      <ion-button expand="block" shape="round" (click)="setCurrentUserCoordinates()">Use Current Location</ion-button>
+    </div>
+    <div>
+      <ion-button expand="block" shape="round" fill="clear" color="primary">Select On Map</ion-button>
+    </div>
+  </div>
+  
+</ion-modal>

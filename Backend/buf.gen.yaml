@@ -1,0 +1,53 @@
+version: v1
+plugins:
+  - name: go
+    out: .
+    opt: paths=source_relative
+  - name: connect-go
+    out: .
+    opt: paths=source_relative
+  - name: es
+    out: ../Frontend/src/app/shared/services/client
+    opt: target=ts
+  - name: connect-es
+    out: ../Frontend/src/app/shared/services/client
+    opt: target=ts
+  # - name: ts
+  #   out: proto/build/client
+  #   opt: target=typescript
+
+
+
+  # - plugin: buf.build/grpc-ecosystem/openapiv2
+  #   out: gen/openapi
+  
+
+# # buf.gen.yaml
+# version: v2
+# clean: true
+# managed:
+#   enabled: true # Enables automatic path management
+
+# plugins:
+#   # Standard Go
+#   - remote: buf.build/protocolbuffers/go
+#     out: gen/go
+#     opt:
+#       - paths=source_relative
+
+#   - remote: buf.build/connectrpc/go
+#     out: gen/go
+#     opt:
+#       - paths=source_relative
+
+#   # Validation (protovalidate-go)
+#   - remote: buf.build/bufbuild/validate-go
+#     out: gen
+#     opt: paths=source_relative
+
+#   # TypeScript/JavaScript (Example: using connect-es plugin for TS output)
+#   - remote: buf.build/bufbuild/es
+#     out: proto/build/client
+#     opt: 
+#       - target=ts
+#       - paths=source_relative

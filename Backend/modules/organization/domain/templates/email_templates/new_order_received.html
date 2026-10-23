@@ -1,0 +1,55 @@
+<html>
+Dear Merchant,
+<br/>
+<br/>
+A new order has been received! See the details below:
+<br/>
+<br/>
+<br/>
+<pre style="font-size: 14px;">
+Customer:
+
+    Name: %s %s
+
+    Phone: %s
+
+Order Type: %s
+
+Pickup Address: 21 Cassia Park Rd, Kingston 10
+
+Delivery Address: 30 Seaward Drive, Kingston 20
+
+Truck:
+
+    Bed Length (mm): 2082.8​
+
+    Bed Width (mm): 1590.7​
+
+    Bed Height (mm): N/A
+
+    Tipper: No
+
+    Crane: No
+
+    Freezer: No
+
+    Refrigerator: No
+
+    Bucket: No
+
+Job Date: Fri Jan 16 2026 10:00:00 UTC-05:00 (America/Jamaica)
+
+Payment Date: Tue Jan 13 2026 11:47:09 UTC-05:00 (America/Jamaica)
+
+Total: JMD 8,000.00
+
+USD Total: %.2f
+</pre>
+Once the order delivery has been completed open the following link to clear the order from the order queue:
+<br/>
+<br/>
+${environment.BACKEND_URL}/${routes.completeDelivery}/${order.id}
+<br/>
+<br/>
+Regards.
+</html>

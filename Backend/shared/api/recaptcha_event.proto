@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package shared;
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+message RecaptchaEvent {
+    string token = 1;
+    string expectedAction = 2;
+    string siteKey = 3;
+}

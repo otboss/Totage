@@ -1,0 +1,99 @@
+<!-- <ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>add-edit-account</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="dashboardPage"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ !account ? 'Create' : 'Edit' }} Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+ <form #form (submit)="onSubmit()">
+  <ion-grid>
+
+      <ion-row>
+        <ion-input 
+          #emailField 
+          fill="outline" 
+          label="Email Address" 
+          labelPlacement="floating" 
+          [errorText]="formErrors().email"
+          (keyup)="updateForm('email',  emailField.value.toString())"
+          [class.ion-touched]="isSubmitAttempted && formErrors().email"
+          [class.ion-invalid]="isSubmitAttempted && formErrors().email"
+          (ionBlur)="formErrors().email && showFieldErrors($event.target)"
+          [value]="account?.email ?? ''"
+          >
+        </ion-input>
+      </ion-row>
+
+      <ion-row class="role-select-container">
+        <div>
+          <h4>Select Roles</h4>
+        </div>
+
+        <div class="role-select-option">
+          <div>
+            <h5>Admin</h5>
+          </div>
+          <div>
+            <ion-toggle
+              (ionChange)="updateForm('isAdmin', $event.detail.checked)"
+              [checked]="account?.isAdmin ?? false"
+              >
+            </ion-toggle>
+          </div>
+        </div>
+
+        <div class="role-select-option">
+          <div>
+            <h5>Driver</h5>
+          </div>
+          <div>
+            <ion-toggle
+                (ionChange)="updateForm('isAdmin', $event.detail.checked)"
+                [checked]="account?.isAdmin ?? false"
+              >
+            </ion-toggle>
+          </div>
+        </div>
+
+        <div class="role-select-option">
+          <div>
+            <h5>Support</h5>
+          </div>
+          <div>
+            <ion-toggle
+              (ionChange)="updateForm('isCustomerSupport', $event.detail.checked)"
+              [checked]="account?.isCustomerSupport ?? false"
+              >
+            </ion-toggle>
+          </div>
+        </div>
+
+        <!-- <div class="role-select-option">
+          <div>
+            <h5>Worker</h5>
+          </div>
+          <div>
+            <ion-toggle></ion-toggle>
+          </div>
+        </div> -->
+
+      </ion-row>
+
+      <ion-row>
+        <ion-button fill="solid" expand="block" type="submit">{{ account ? 'Save' : 'Submit'  }}</ion-button>
+      </ion-row>
+
+  </ion-grid>
+
+
+ </form>
+</ion-content>

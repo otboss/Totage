@@ -1,0 +1,53 @@
+<div class="fill-parent">
+  <div class="display-image">
+    <div>
+      <img [src]="image()"/>
+    </div>
+    <div class="label-container">
+      <span>{{ label() }}</span>
+    </div>
+  </div>
+  <div class="content">
+    @switch (orderType()) {
+      @case (OrderType.FREIGHT) {
+        <app-order-details-freight [isSubmitAttempted]="getIsSubmitted()" (output)="this.output.emit($event)" (errors)="formErrorsOutput = $event"></app-order-details-freight>
+      }
+      @case (OrderType.EGG) {
+        <app-order-details-egg></app-order-details-egg>
+      }
+      @case (OrderType.BLOCK) {
+        <app-order-details-block></app-order-details-block>
+      }
+      @case (OrderType.CHARCOAL) {
+        <app-order-details-charcoal></app-order-details-charcoal>
+      }
+      @case (OrderType.VEHICLE_RENTAL) {
+        <app-order-details-vehicle-rental></app-order-details-vehicle-rental>
+      }
+      @case (OrderType.WATER_PURIFIED) {
+        <app-order-details-water-purified></app-order-details-water-purified>
+      }
+      @case (OrderType.WATER_UNPURIFIED) {
+        <app-order-details-water-unpurified></app-order-details-water-unpurified>
+      }
+      @case (OrderType.ICE) {
+        <app-order-details-ice></app-order-details-ice>
+      }
+      @case (OrderType.COCONUT) {
+        <app-order-details-coconut></app-order-details-coconut>
+      }
+    }
+  </div>
+  
+
+  <div class="action-buttons">
+    <ion-button expand="block" fill="clear" color="primary" (click)="goPreviousSlide.emit()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+      BACK
+    </ion-button>
+    <ion-button expand="block" fill="clear" color="primary" (click)="setIsSubmitted(); !formErrorsPresent() ? goNextSlide.emit() : null">
+      NEXT
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+</div>
