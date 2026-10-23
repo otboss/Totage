@@ -1,0 +1,52 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Backend with .env (Go)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/Backend/main.go",
+            "envFile": "${workspaceFolder}/Backend/.env",
+            "cwd": "${workspaceFolder}/Backend",
+            "preLaunchTask": "Start Docker Containers"
+        },
+        {
+            "name": "Launch Frontend (Ionic)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "ionic",
+                "serve"
+            ],
+            "cwd": "${workspaceFolder}/Frontend",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Buf Generate (Backend)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "buf",
+            "runtimeArgs": [
+                "generate",
+                "--include-imports"
+            ],
+            "cwd": "${workspaceFolder}/Backend",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "SQLC Generate (Backend)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "sqlc",
+            "runtimeArgs": [
+                "generate",
+                "-f",
+                "./sqlc.yml"
+            ],
+            "cwd": "${workspaceFolder}/Backend",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -15,6 +15,11 @@ go install github.com/bufbuild/buf/cmd/buf@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
+Start dependent services
+```
+docker compose up
+```
+
 Install protobuf related packages to generate typescript if not already available:
 ```
 npm install -g @bufbuild/protoc-gen-es @connectrpc/protoc-gen-connect-es
