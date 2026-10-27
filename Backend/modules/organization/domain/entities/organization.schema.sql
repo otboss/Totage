@@ -253,7 +253,7 @@ CREATE TABLE IF NOT EXISTS organization.paypal_credentials
 (
     id BIGSERIAL PRIMARY KEY,
     organization_id BIGSERIAL NOT NULL UNIQUE,
-    email TEXT NOT NULL,
+    email TEXT NOT NULL, -- TODO: Investigate if required
     subscription_id TEXT NOT NULL,
     rest_sdk_client_id_encrypted TEXT,
     rest_sdk_secret_encrypted TEXT,
@@ -262,6 +262,19 @@ CREATE TABLE IF NOT EXISTS organization.paypal_credentials
         (rest_sdk_client_id_encrypted IS NULL AND rest_sdk_secret_encrypted IS NULL) OR
         (rest_sdk_client_id_encrypted IS NOT NULL AND rest_sdk_secret_encrypted IS NOT NULL)
     )
+);
+
+CREATE TABLE IF NOT EXISTS organization.bitcoin_credentials
+(
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGSERIAL NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS organization.bitcoin_lightning_credentials
+(
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGSERIAL NOT NULL UNIQUE,
+    lightning_address_encrypted TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS organization.bank_accounts 

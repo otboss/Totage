@@ -48,7 +48,7 @@ func (s *Handlers) CreateRentalVehicleOrderHandler(
 		return nil, errors.New("invalid phone number provided")
 	}
 
-	if req.Msg.OrderDetails.PaymentMethod == endpoints.PaymentMethod_BANK_TRANSFER {
+	if req.Msg.OrderDetails.PaymentMethod == common.PaymentMethod_BANK_TRANSFER {
 		if req.Msg.Customer.Email == nil {
 			return nil, errors.New("email address is required for bank transfers")
 		}

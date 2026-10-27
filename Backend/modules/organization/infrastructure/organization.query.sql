@@ -372,12 +372,78 @@ WHERE organization_id = $1;
 -- name: GetOrganizationMaxOrderQueueLength :one
 SELECT max_order_queue_size FROM organization.organizations WHERE id = $1;
 
--- name: GetPaypalCredentials :one
+-- name: UpsertPayPalCredential :one
+INSERT INTO organization.paypal_credentials (
+    organization_id,
+    email,
+    subscription_id,
+    rest_sdk_client_id_encrypted,
+    rest_sdk_secret_encrypted
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+ON CONFLICT (organization_id) 
+DO UPDATE SET
+    email = EXCLUDED.email,
+    subscription_id = EXCLUDED.subscription_id,
+    rest_sdk_client_id_encrypted = EXCLUDED.rest_sdk_client_id_encrypted,
+    rest_sdk_secret_encrypted = EXCLUDED.rest_sdk_secret_encrypted
+RETURNING id, organization_id, email, subscription_id, rest_sdk_client_id_encrypted, rest_sdk_secret_encrypted;
+
+-- name: GetPayPalCredentialByOrganizationID :one
 SELECT 
-subscription_id,
-rest_sdk_client_id_encrypted,
-rest_sdk_secret_encrypted
-FROM organization.paypal_credentials WHERE organization_id = $1;
+    id, 
+    organization_id, 
+    email, 
+    subscription_id, 
+    rest_sdk_client_id_encrypted, 
+    rest_sdk_secret_encrypted
+FROM organization.paypal_credentials
+WHERE organization_id = $1;
+
+-- name: DeletePayPalCredentialByOrganizationID :exec
+DELETE FROM organization.paypal_credentials
+WHERE organization_id = $1;
+
+-- name: CreateBitcoinCredential :one
+INSERT INTO organization.bitcoin_credentials (
+    organization_id
+) VALUES (
+    $1
+)
+RETURNING id, organization_id;
+
+-- name: DeleteBitcoinCredentialByOrganizationID :exec
+DELETE FROM organization.bitcoin_credentials
+WHERE organization_id = $1;
+
+-- name: CreateBitcoinLightningCredential :one
+INSERT INTO organization.bitcoin_lightning_credentials (
+    organization_id, 
+    lightning_address_encrypted
+) VALUES (
+    $1, $2
+)
+RETURNING id, organization_id, lightning_address_encrypted;
+
+-- name: DeleteBitcoinLightningCredentialByOrganizationID :exec
+DELETE FROM organization.bitcoin_lightning_credentials
+WHERE organization_id = $1;
+
+-- name: GetBitcoinCredentialByOrganizationID :one
+SELECT 
+    id, 
+    organization_id
+FROM organization.bitcoin_credentials
+WHERE organization_id = $1;
+
+-- name: GetBitcoinLightningCredentialByOrganizationID :one
+SELECT 
+    id, 
+    organization_id, 
+    lightning_address_encrypted
+FROM organization.bitcoin_lightning_credentials
+WHERE organization_id = $1;
 
 -- name: GetAccounts :many
 SELECT

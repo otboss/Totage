@@ -1,13 +1,32 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-title>add-edit-order-payment-method</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="dashboardPage"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Configure @switch (selectedPaymentMethod) {
+      @case (paymentMethod.BITCOIN) {
+        Bitcoin
+      }
+      @case (paymentMethod.BITCOIN_LIGHTNING) {
+        Bitcoin Lightning
+      }
+      @case (paymentMethod.PAYPAL) {
+        Paypal
+      }
+    }</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">add-edit-order-payment-method</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  @switch (selectedPaymentMethod) {
+      @case (paymentMethod.BITCOIN) {
+        <app-add-edit-bitcoin></app-add-edit-bitcoin>
+      }
+      @case (paymentMethod.BITCOIN_LIGHTNING) {
+        <app-add-edit-bitcoin-lightning></app-add-edit-bitcoin-lightning>
+      }
+      @case (paymentMethod.PAYPAL) {
+        <app-add-edit-paypal></app-add-edit-paypal>
+      }
+    }
 </ion-content>

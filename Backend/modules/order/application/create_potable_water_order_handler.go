@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	api "waterordersystem/GOBACKEND/modules/order/api"
 	endpoints "waterordersystem/GOBACKEND/modules/order/api"
 	db_order "waterordersystem/GOBACKEND/modules/order/infrastructure"
 	db_organization "waterordersystem/GOBACKEND/modules/organization/infrastructure"
@@ -49,7 +48,7 @@ func (s *Handlers) CreatePotableWaterOrderHandler(
 		return nil, errors.New("invalid phone number provided")
 	}
 
-	if req.Msg.OrderDetails.PaymentMethod == endpoints.PaymentMethod_BANK_TRANSFER {
+	if req.Msg.OrderDetails.PaymentMethod == common.PaymentMethod_BANK_TRANSFER {
 		if req.Msg.Customer.Email == nil {
 			return nil, errors.New("email address is required for bank transfers")
 		}
@@ -161,7 +160,7 @@ func (s *Handlers) CreatePotableWaterOrderHandler(
 		)
 	}
 
-	if string(req.Msg.OrderDetails.PaymentMethod) == api.PaymentMethod_name[int32(api.PaymentMethod_BANK_TRANSFER)] {
+	if string(req.Msg.OrderDetails.PaymentMethod) == common.PaymentMethod_name[int32(common.PaymentMethod_BANK_TRANSFER)] {
 		if req.Msg.Customer.Email == nil || user.Email.Valid == false {
 			return nil, errors.New("email address required for bank transfer")
 		}

@@ -158,7 +158,7 @@ func (h *helperFunctions) CheckOrganizationSubscription(ctx context.Context, org
 		return nil
 	}
 
-	paypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, organization.ID)
+	paypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, organization.ID)
 	if err == pgx.ErrNoRows {
 		return errors.New("organization is not subscribed")
 	} else {
@@ -188,7 +188,7 @@ func (h *helperFunctions) FinalizePaymentAndSaveOrder(
 	organization db_organization.GetOrganizationRow,
 	user db_user.GetUserRow,
 	discountCode *string,
-	paymentMethod endpoints.PaymentMethod,
+	paymentMethod common.PaymentMethod,
 	bankAccountInfoId *int64,
 	waypoints []*common.Coordinates,
 	roundTripDistance float64,
@@ -196,7 +196,7 @@ func (h *helperFunctions) FinalizePaymentAndSaveOrder(
 ) (OrderId, *endpoints.CreateOrderResponse_PaypalOrderInfo, error) {
 	var orderId OrderId
 	var paypalResponseObj *endpoints.CreateOrderResponse_PaypalOrderInfo
-	if string(paymentMethod) == api.PaymentMethod_name[int32(api.PaymentMethod_BANK_TRANSFER)] {
+	if string(paymentMethod) == common.PaymentMethod_name[int32(common.PaymentMethod_BANK_TRANSFER)] {
 		if user.Email.Valid == false {
 			return orderId, paypalResponseObj, errors.New("email address required for bank transfer")
 		}
@@ -218,9 +218,9 @@ func (h *helperFunctions) FinalizePaymentAndSaveOrder(
 	orderStatus := db_order.OrderOrderStatusPENDING
 
 	switch paymentMethod {
-	case endpoints.PaymentMethod_PAYPAL:
+	case common.PaymentMethod_PAYPAL:
 
-		paypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, organization.ID)
+		paypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, organization.ID)
 		if err != nil {
 			return orderId, paypalResponseObj, errors.New("internal server error")
 		}
@@ -259,7 +259,7 @@ func (h *helperFunctions) FinalizePaymentAndSaveOrder(
 			Status: paypalResponse.Status,
 			Links:  links,
 		}
-	case endpoints.PaymentMethod_BANK_TRANSFER:
+	case common.PaymentMethod_BANK_TRANSFER:
 		orderStatus = db_order.OrderOrderStatusUNPAID
 
 		organizationMailList, err := db_organization.Query.GetOrganizationMailListByOrganizationId(ctx, organization.ID)
@@ -296,9 +296,9 @@ func (h *helperFunctions) FinalizePaymentAndSaveOrder(
 			}
 		}()
 
-	case endpoints.PaymentMethod_BITCOIN:
+	case common.PaymentMethod_BITCOIN:
 		// TODO: Handle bitcoin payment
-	case endpoints.PaymentMethod_BITCOIN_LIGHTNING:
+	case common.PaymentMethod_BITCOIN_LIGHTNING:
 	}
 
 	var paypalOrderId string

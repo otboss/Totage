@@ -11,6 +11,7 @@ import "shared/api/currency.proto";
 import "shared/api/account_role.proto";
 import "shared/api/pagination.proto";
 import "shared/api/job_timeslot.proto";
+import "shared/api/payment_method.proto";
 
 import "buf/validate/validate.proto";
 import "google/type/date.proto";
@@ -63,6 +64,13 @@ service OrganizationService {
     rpc DeleteInstagramHandleHandler (DeleteInstagramHandleCommand) returns (DeleteInstagramHandleResponse);
 
     rpc VerifyEmailAndPhoneHandler (VerifyEmailAndPhoneCommand) returns (VerifyEmailAndPhoneResponse);
+
+    rpc GetEnabledPaymentMethodsHandler (GetEnabledPaymentMethodsQuery) returns (GetEnabledPaymentMethodsResponse);
+
+    rpc TogglePaypalSupportHandler (TogglePaypalSupportCommand) returns (TogglePaypalSupportResponse);
+    rpc ToggleBitcoinSupportHandler (ToggleBitcoinSupportCommand) returns (ToggleBitcoinSupportResponse);
+    rpc ToggleBitcoinLightningSupportHandler (ToggleBitcoinLightningSupportCommand) returns (ToggleBitcoinLightningSupportResponse);
+
 
     // rpc GetSalesUnitsHandler (GetSalesUnitsQuery) returns (GetSalesUnitsResponse);
 }
@@ -672,6 +680,41 @@ message VerifyEmailAndPhoneResponse {
     bool isVerificationComplete = 1;
     string emailVerificationSessionToken = 2;
     string phoneVerificationSessionToken = 3;
+}
+
+message GetEnabledPaymentMethodsQuery {
+    int64 organizationId = 1;
+}
+
+message GetEnabledPaymentMethodsResponse {
+    repeated shared.PaymentMethod paymentMethods = 1;
+}
+
+message TogglePaypalSupportCommand {
+    int64 organizationId = 1;
+    string paypalRestSdkClientId = 2;
+    string paypalRestSdkSecret = 3;
+}
+
+message TogglePaypalSupportResponse {
+
+}
+
+message ToggleBitcoinSupportCommand {
+    int64 organizationId = 1;
+}
+
+message ToggleBitcoinSupportResponse {
+
+}
+
+message ToggleBitcoinLightningSupportCommand {
+    int64 organizationId = 1;
+    string lightningAddress = 2;
+}
+
+message ToggleBitcoinLightningSupportResponse {
+
 }
 
 // message GetSalesUnitsQuery {

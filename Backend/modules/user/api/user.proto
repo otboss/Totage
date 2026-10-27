@@ -18,6 +18,7 @@ service UserService {
     rpc LoginViaPasswordHandler (LoginViaPasswordCommand) returns (LoginViaPasswordResponse);
     rpc LoginViaOAuthHandler (LoginViaOAuthCommand) returns (LoginViaOAuthResponse);
     rpc ForgotPasswordHandler (ForgotPasswordCommand) returns (ForgotPasswordResponse);
+    rpc ToggleTermsAndConditionsAcceptedHandler (ToggleTermsAndConditionsAcceptedCommand) returns (ToggleTermsAndConditionsAcceptedResponse);
     rpc ResetPasswordHandler (ResetPasswordCommand) returns (ResetPasswordResponse);
     rpc CreateUserViaEmailHandler (CreateUserViaEmailCommand) returns (CreateUserViaEmailResponse);
 }
@@ -61,6 +62,14 @@ message ForgotPasswordCommand {
 
 message ForgotPasswordResponse {
     string SessionToken = 1;
+}
+
+message ToggleTermsAndConditionsAcceptedCommand {
+
+}
+
+message ToggleTermsAndConditionsAcceptedResponse {
+
 }
 
 message ResetPasswordCommand {

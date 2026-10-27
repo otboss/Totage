@@ -9,7 +9,7 @@
             "program": "${workspaceFolder}/Backend/main.go",
             "envFile": "${workspaceFolder}/Backend/.env",
             "cwd": "${workspaceFolder}/Backend",
-            "preLaunchTask": "Start Docker Containers"
+            "preLaunchTask": "Prepare Backend Environment"
         },
         {
             "name": "Launch Frontend (Ionic)",

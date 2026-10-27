@@ -10,6 +10,7 @@ import "shared/api/country.proto";
 import "shared/api/recaptcha_event.proto";
 import "shared/api/pagination.proto";
 import "shared/api/job_timeslot.proto";
+import "shared/api/payment_method.proto";
 
 import "buf/validate/validate.proto";
 import "google/type/date.proto";
@@ -363,12 +364,12 @@ message Customer {
     ];
 }
 
-enum PaymentMethod {
-    PAYPAL = 0;
-    BANK_TRANSFER = 1;
-    BITCOIN = 2;
-    BITCOIN_LIGHTNING = 3;
-}
+// enum PaymentMethod {
+//     PAYPAL = 0;
+//     BANK_TRANSFER = 1;
+//     BITCOIN = 2;
+//     BITCOIN_LIGHTNING = 3;
+// }
 
 message CreatePotableWaterOrderCommand {
     OrderDetails orderDetails = 1;
@@ -382,7 +383,7 @@ message CreatePotableWaterOrderCommand {
             (buf.validate.field).int32.gte = 0
         ];
         bool bottlesRequired = 7;
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         optional int64 bankAccountInfoId = 11;
         optional int64 jobDate = 16;
         optional string discountCode = 12 [
@@ -409,7 +410,7 @@ message CreateIrrigationWaterOrderCommand {
         int32 quantityOfBarrels = 17 [
             (buf.validate.field).int32.gte = 0
         ];
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         optional int64 bankAccountInfoId = 11;
         optional int64 jobDate = 16;
         optional string discountCode = 12 [
@@ -429,7 +430,7 @@ message CreateIrrigationWaterOrderCommand {
 //     message OrderDetails {
 //         int64 organizationId = 2;
 //         Location deliveryLocation = 6 [(buf.validate.field).repeated.min_items = 2];
-//         PaymentMethod paymentMethod = 3;
+//         shared.PaymentMethod paymentMethod = 3;
 //         bool bottlesRequired = 7;
 //         int32 quantityOfPurifiedWater = 8 [
 //             (buf.validate.field).int32.gte = 0
@@ -462,7 +463,7 @@ message CreateFreightOrderCommand {
     message OrderDetails {
         int64 organizationId = 2;
         repeated Location waypointAddresses = 3 [(buf.validate.field).repeated.min_items = 2];
-        PaymentMethod paymentMethod = 4;
+        shared.PaymentMethod paymentMethod = 4;
         shared.Truck truck = 5;
         optional int64 bankAccountInfoId = 6;
         optional int64 jobDate = 7;
@@ -483,7 +484,7 @@ message CreateBlockOrderCommand {
     message OrderDetails {
         int64 organizationId = 2;
         Location deliveryLocation = 6 [(buf.validate.field).repeated.min_items = 2];
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         int32 quantityOfBlocks = 4 [
             (buf.validate.field).int32.gte = 0
         ];
@@ -522,7 +523,7 @@ message CreateIceOrderCommand {
     message OrderDetails {
         int64 organizationId = 2;
         Location deliveryLocation = 6 [(buf.validate.field).repeated.min_items = 2];
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         int32 quantityOfIce = 4 [
             (buf.validate.field).int32.gte = 0
         ];
@@ -581,7 +582,7 @@ message CreateEggOrderCommand {
     message OrderDetails {
         int64 organizationId = 2;
         Location deliveryLocation = 6 [(buf.validate.field).repeated.min_items = 2];
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         int32 quantityOfEggs = 4 [
             (buf.validate.field).int32.gte = 0
         ];
@@ -604,7 +605,7 @@ message CreateCharcoalOrderCommand {
     message OrderDetails {
         int64 organizationId = 2;
         Location deliveryLocation = 6 [(buf.validate.field).repeated.min_items = 2];
-        PaymentMethod paymentMethod = 3;
+        shared.PaymentMethod paymentMethod = 3;
         int32 quantityOfCharcoal = 4 [
             (buf.validate.field).int32.gte = 0
         ];
@@ -629,7 +630,7 @@ message CreateRentalVehicleOrderCommand {
         int64 organizationId = 2;
         int64 startDate = 3;
         int64 endDate = 4;
-        PaymentMethod paymentMethod = 5;
+        shared.PaymentMethod paymentMethod = 5;
         optional int64 bankAccountInfoId = 6;
         optional string discountCode = 8 [
             (buf.validate.field).string = {

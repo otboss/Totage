@@ -22,6 +22,25 @@
                 }
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Generate .env.template",
+            "type": "shell",
+            "command": "node",
+            "args": [
+                "-e",
+                "const fs = require(\"fs\"); const envPath = \"Backend/.env\"; const templatePath = \"Backend/.env.template\"; if (fs.existsSync(envPath)) { const template = fs.readFileSync(envPath, \"utf8\").split(\"\\n\").map(line => { if (line.trim().startsWith(\"#\") || !line.includes(\"=\")) return line; const [key] = line.split(\"=\"); return `${key}=`; }).join(\"\\n\"); fs.writeFileSync(templatePath, template); console.log(\".env.template generated successfully!\"); } else { console.error(\"Error: Backend/.env file not found.\"); process.exit(1); }"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare Backend Environment",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Generate .env.template",
+                "Start Docker Containers"
+            ],
+            "problemMatcher": []
         }
     ]
 }

@@ -245,7 +245,7 @@ func (h *helperFunctions) BuildOrderTotalResponse(ctx context.Context, orderType
 	// 	weekdays = append(weekdays, common.Weekdays(weekday))
 	// }
 
-	paypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, organization.ID)
+	paypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, organization.ID)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,

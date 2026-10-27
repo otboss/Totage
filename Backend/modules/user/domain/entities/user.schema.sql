@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS _user.users
     google_user_id TEXT,
     oauth_refresh_token_encrypted TEXT,
     last_ip_address TEXT NOT NULL,
+    terms_and_condition_accepted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

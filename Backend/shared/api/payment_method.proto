@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package shared;
+
+import "buf/validate/validate.proto";
+
+option go_package = "waterordersystem/GOBACKEND/shared/api;common";
+
+
+enum PaymentMethod {
+    PAYPAL = 0;
+    BANK_TRANSFER = 1;
+    BITCOIN = 2;
+    BITCOIN_LIGHTNING = 3;
+}

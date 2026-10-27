@@ -41,7 +41,7 @@ func (s *Handlers) PaypalCaptureOrderHandler(
 		)
 	}
 
-	organizationPaypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, order.OrganizationID)
+	organizationPaypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, order.OrganizationID)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,
@@ -76,7 +76,7 @@ func (s *Handlers) PaypalCaptureOrderHandler(
 		)
 	}
 
-	paypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, organization.ID)
+	paypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, organization.ID)
 	if err == pgx.ErrNoRows {
 		return nil, connect.NewError(
 			connect.CodeUnauthenticated,

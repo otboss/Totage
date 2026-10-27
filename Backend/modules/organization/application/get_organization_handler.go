@@ -69,7 +69,7 @@ func (s *Handlers) GetOrganizationHandler(
 	}
 
 	var decryptedRestSdkClientID *string = nil
-	paypalCredentials, err := db_organization.Query.GetPaypalCredentials(ctx, req.Msg.OrganizationId)
+	paypalCredentials, err := db_organization.Query.GetPayPalCredentialByOrganizationID(ctx, req.Msg.OrganizationId)
 	if err != nil && err != pgx.ErrNoRows {
 		return nil, connect.NewError(
 			connect.CodeInternal,

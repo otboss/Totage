@@ -17,6 +17,11 @@ VALUES
 RETURNING 
     id;
 
+-- name: ToggleTermsAndConditionsAccepted :exec
+UPDATE _user.users
+SET terms_and_condition_accepted = true
+WHERE id = $1;
+
 -- name: CreateUser :one
 INSERT INTO _user.users
     (
