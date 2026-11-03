@@ -40,12 +40,48 @@ func (s *Handlers) UpdateFreightConfigHandler(
 		return nil, errors.New("not permitted")
 	}
 
+	var SolidWasteDumpSiteLatitude pgtype.Float8
+	if req.Msg.SolidWasteDumpSiteLatitude != nil {
+		SolidWasteDumpSiteLatitude = pgtype.Float8{
+			Float64: *req.Msg.SolidWasteDumpSiteLatitude,
+			Valid:   true,
+		}
+	}
+
+	var SolidWasteDumpSiteLongitude pgtype.Float8
+	if req.Msg.SolidWasteDumpSiteLongitude != nil {
+		SolidWasteDumpSiteLongitude = pgtype.Float8{
+			Float64: *req.Msg.SolidWasteDumpSiteLongitude,
+			Valid:   true,
+		}
+	}
+
+	var LiquidWasteDumpSiteLongitude pgtype.Float8
+	if req.Msg.LiquidWasteDumpSiteLongitude != nil {
+		LiquidWasteDumpSiteLongitude = pgtype.Float8{
+			Float64: *req.Msg.LiquidWasteDumpSiteLongitude,
+			Valid:   true,
+		}
+	}
+
+	var LiquidWasteDumpSiteLatitude pgtype.Float8
+	if req.Msg.LiquidWasteDumpSiteLatitude != nil {
+		LiquidWasteDumpSiteLatitude = pgtype.Float8{
+			Float64: *req.Msg.LiquidWasteDumpSiteLatitude,
+			Valid:   true,
+		}
+	}
+
 	err = db_organization.Query.UpdateOrganizationFreightConfig(ctx, db_organization.UpdateOrganizationFreightConfigParams{
 		OrganizationID: req.Msg.OrganizationId,
 		IsEnabled: pgtype.Bool{
 			Bool:  req.Msg.IsEnabled,
 			Valid: true,
 		},
+		SolidWasteDumpSiteLongitude:  SolidWasteDumpSiteLongitude,
+		SolidWasteDumpSiteLatitude:   SolidWasteDumpSiteLatitude,
+		LiquidWasteDumpSiteLongitude: LiquidWasteDumpSiteLongitude,
+		LiquidWasteDumpSiteLatitude:  LiquidWasteDumpSiteLatitude,
 	})
 	if err != nil {
 		return nil, connect.NewError(

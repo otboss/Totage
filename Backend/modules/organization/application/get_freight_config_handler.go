@@ -41,10 +41,7 @@ func (s *Handlers) GetFreightConfigHandler(
 
 	freightConfig, err := db_organization.Query.GetFreightConfig(ctx, req.Msg.OrganizationId)
 	if err == pgx.ErrNoRows {
-		return nil, connect.NewError(
-			connect.CodeNotFound,
-			errors.New("config not found"),
-		)
+		return connect.NewResponse(&endpoints.GetFreightConfigResponse{}), nil
 	}
 	if err != nil {
 		return nil, connect.NewError(
@@ -53,11 +50,26 @@ func (s *Handlers) GetFreightConfigHandler(
 		)
 	}
 
+	var sLat *float64 = nil
+	var sLon *float64 = nil
+	var lLat *float64 = nil
+	var lLon *float64 = nil
+
+	if freightConfig.SolidWasteDumpSiteLatitude != -999.0 && freightConfig.SolidWasteDumpSiteLongitude != -999.0 {
+		sLat = &freightConfig.SolidWasteDumpSiteLatitude
+		sLon = &freightConfig.SolidWasteDumpSiteLongitude
+	}
+
+	if freightConfig.LiquidWasteDumpSiteLatitude != -999.0 && freightConfig.LiquidWasteDumpSiteLongitude != -999.0 {
+		lLat = &freightConfig.LiquidWasteDumpSiteLatitude
+		lLon = &freightConfig.LiquidWasteDumpSiteLongitude
+	}
+
 	return connect.NewResponse(&endpoints.GetFreightConfigResponse{
-		SolidWasteDumpSiteLatitude:   &freightConfig.SoplidWasteDumpSiteLatitude,
-		SolidWasteDumpSiteLongitude:  &freightConfig.SolidWasteDumpSiteLongitude,
-		LiquidWasteDumpSiteLatitude:  &freightConfig.LiquidWasteDumpSiteLatitude,
-		LiquidWasteDumpSiteLongitude: &freightConfig.LiquidWasteDumpSiteLongitude,
+		SolidWasteDumpSiteLatitude:   sLat,
+		SolidWasteDumpSiteLongitude:  sLon,
+		LiquidWasteDumpSiteLatitude:  lLat,
+		LiquidWasteDumpSiteLongitude: lLon,
 		IsEnabled:                    freightConfig.IsEnabled.Bool,
 	}), nil
 }

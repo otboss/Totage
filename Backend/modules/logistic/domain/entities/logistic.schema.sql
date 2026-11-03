@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS logistic.vehicles
     CONSTRAINT fk_driver FOREIGN KEY (driver_account_id) REFERENCES organization.accounts(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS logistic.truck_properties (
+    id BIGSERIAL PRIMARY KEY,
+    property TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS logistic.trucks 
 (
     id BIGSERIAL PRIMARY KEY,
@@ -52,10 +57,6 @@ CREATE TABLE IF NOT EXISTS logistic.trucks
 );
 CREATE INDEX idx_logistic_last_location ON logistic.trucks USING GIST(last_location);
 
-CREATE TABLE IF NOT EXISTS logistic.truck_properties (
-    id BIGSERIAL PRIMARY KEY,
-    property TEXT NOT NULL
-);
 
 -- Get
 

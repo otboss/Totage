@@ -245,14 +245,15 @@ AND organization.organizations.is_approved = FALSE;
 SELECT 
     id,
     organization_id,
-    freight_price_min,
-    ST_X(solid_waste_dump_site_geog::geometry)::float AS solid_waste_dump_site_longitude,
-    ST_Y(solid_waste_dump_site_geog::geometry)::float AS soplid_waste_dump_site_latitude,
-    ST_X(liquid_waste_dump_site_geog::geometry)::float AS liquid_waste_dump_site_longitude,
-    ST_Y(liquid_waste_dump_site_geog::geometry)::float AS liquid_waste_dump_site_latitude,
+    COALESCE(ST_X(solid_waste_dump_site_geog::geometry), -999.0)::float AS solid_waste_dump_site_longitude,
+    COALESCE(ST_Y(solid_waste_dump_site_geog::geometry), -999.0)::float AS solid_waste_dump_site_latitude,
+    COALESCE(ST_X(liquid_waste_dump_site_geog::geometry), -999.0)::float AS liquid_waste_dump_site_longitude,
+    COALESCE(ST_Y(liquid_waste_dump_site_geog::geometry), -999.0)::float AS liquid_waste_dump_site_latitude,
     is_enabled
 FROM organization.freight_config
 WHERE organization_id = $1;
+
+
 
 -- name: GetPotableWaterSalesConfig :one
 SELECT 
@@ -664,10 +665,10 @@ WHERE id = $1;
 
 
 -- name: UpdateOrganizationFreightConfig :exec
+-- name: UpdateOrganizationFreightConfig :exec
 INSERT INTO organization.freight_config
 (
     organization_id,
-    freight_price_min,
     solid_waste_dump_site_geog,
     liquid_waste_dump_site_geog,
     is_enabled
@@ -675,20 +676,33 @@ INSERT INTO organization.freight_config
 VALUES
 (
     $1,
-    $2,
-    ST_SetSRID(ST_MakePoint(sqlc.arg(solid_waste_dump_site_longitude)::float, sqlc.arg(solid_waste_dump_site_latitude)::float), 4326)::geography,
-    ST_SetSRID(ST_MakePoint(sqlc.arg(liquid_waste_dump_site_longitude)::float, sqlc.arg(liquid_waste_dump_site_latitude)::float), 4326)::geography,
-    $3
+    CASE 
+        WHEN sqlc.narg(solid_waste_dump_site_longitude)::float IS NOT NULL AND sqlc.narg(solid_waste_dump_site_latitude)::float IS NOT NULL 
+        THEN ST_SetSRID(ST_MakePoint(sqlc.narg(solid_waste_dump_site_longitude)::float, sqlc.narg(solid_waste_dump_site_latitude)::float), 4326)::geography
+        ELSE NULL
+    END,
+    CASE 
+        WHEN sqlc.narg(liquid_waste_dump_site_longitude)::float IS NOT NULL AND sqlc.narg(liquid_waste_dump_site_latitude)::float IS NOT NULL 
+        THEN ST_SetSRID(ST_MakePoint(sqlc.narg(liquid_waste_dump_site_longitude)::float, sqlc.narg(liquid_waste_dump_site_latitude)::float), 4326)::geography
+        ELSE NULL
+    END,
+    $2
 )
 ON CONFLICT (organization_id)
 DO UPDATE SET
-    freight_price_min = $2,
-    solid_waste_dump_site_geog = ST_SetSRID(ST_MakePoint(sqlc.arg(solid_waste_dump_site_longitude)::float, sqlc.arg(solid_waste_dump_site_latitude)::float), 4326)::geography,
-    liquid_waste_dump_site_geog = ST_SetSRID(ST_MakePoint(sqlc.arg(liquid_waste_dump_site_longitude)::float, sqlc.arg(liquid_waste_dump_site_latitude)::float), 4326)::geography,
-    is_enabled = $3
-WHERE organization_id = $1
-RETURNING 
-    id;
+    solid_waste_dump_site_geog = CASE 
+        WHEN sqlc.narg(solid_waste_dump_site_longitude)::float IS NOT NULL AND sqlc.narg(solid_waste_dump_site_latitude)::float IS NOT NULL 
+        THEN ST_SetSRID(ST_MakePoint(sqlc.narg(solid_waste_dump_site_longitude)::float, sqlc.narg(solid_waste_dump_site_latitude)::float), 4326)::geography
+        ELSE NULL
+    END,
+    liquid_waste_dump_site_geog = CASE 
+        WHEN sqlc.narg(liquid_waste_dump_site_longitude)::float IS NOT NULL AND sqlc.narg(liquid_waste_dump_site_latitude)::float IS NOT NULL 
+        THEN ST_SetSRID(ST_MakePoint(sqlc.narg(liquid_waste_dump_site_longitude)::float, sqlc.narg(liquid_waste_dump_site_latitude)::float), 4326)::geography
+        ELSE NULL
+    END,
+    is_enabled = $2
+WHERE organization.freight_config.organization_id = $1;
+
 
 -- name: UpdateOrganizationPotableWaterSalesConfig :exec
 INSERT INTO organization.potable_water_sales_config

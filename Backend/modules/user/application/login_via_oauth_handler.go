@@ -190,7 +190,9 @@ func (s *Handlers) LoginViaOAuthHandler(
 	}{
 		AccessToken: req.Msg.AccessToken,
 		Expires:     time.Now().UnixMilli() + int64(expiresIn*1000),
-	}, utils.Env.ENC_KEY)
+	},
+		user.TermsAndConditionAccepted.Bool,
+		utils.Env.ENC_KEY)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,

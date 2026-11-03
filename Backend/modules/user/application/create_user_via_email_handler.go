@@ -135,7 +135,7 @@ func (s *Handlers) CreateUserViaEmailHandler(
 		}
 	}
 
-	jwtToken, err := utils.JWT.CreateToken(id, nil, utils.Env.ENC_KEY)
+	user, err := db_user.Query.GetUserByEmail(ctx, req.Msg.Email)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,
@@ -143,7 +143,7 @@ func (s *Handlers) CreateUserViaEmailHandler(
 		)
 	}
 
-	user, err := db_user.Query.GetUserByEmail(ctx, req.Msg.Email)
+	jwtToken, err := utils.JWT.CreateToken(id, nil, user.TermsAndConditionAccepted.Bool, utils.Env.ENC_KEY)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,

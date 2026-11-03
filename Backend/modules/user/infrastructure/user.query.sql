@@ -22,6 +22,11 @@ UPDATE _user.users
 SET terms_and_condition_accepted = true
 WHERE id = $1;
 
+-- name: GetTermsAndConditionsAccepted :one
+SELECT terms_and_condition_accepted
+FROM _user.users 
+WHERE id = $1;
+
 -- name: CreateUser :one
 INSERT INTO _user.users
     (
@@ -111,6 +116,7 @@ SELECT
     password_last_changed,
     google_user_id,
     oauth_refresh_token_encrypted,
+    terms_and_condition_accepted,
     last_ip_address
 FROM _user.users
 WHERE email = sqlc.arg(email)::text;

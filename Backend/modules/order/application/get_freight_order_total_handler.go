@@ -285,7 +285,7 @@ func (h *helperFunctions) BuildOrderTotalResponse(ctx context.Context, orderType
 }
 
 func (h *helperFunctions) CalculateFreightOrderTotal(truck db_logistic.GetTruckRow, freightConfig db_organization.GetFreightConfigRow, dutyFreeKm float64, roundTripDistance float64) float64 {
-	total := float64(freightConfig.FreightPriceMin)
+	total := truck.Cost
 	if float64(roundTripDistance) > dutyFreeKm {
 		total += (float64(roundTripDistance) * float64(truck.FreightPricePerKm))
 	}

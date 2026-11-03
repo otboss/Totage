@@ -34,7 +34,7 @@ func (s *Handlers) LoginViaPasswordHandler(
 		return nil, errors.New("invalid username or password")
 	}
 
-	jwtToken, err := utils.JWT.CreateToken(user.ID, nil, utils.Env.ENC_KEY)
+	jwtToken, err := utils.JWT.CreateToken(user.ID, nil, user.TermsAndConditionAccepted.Bool, utils.Env.ENC_KEY)
 	if err != nil {
 		return nil, connect.NewError(
 			connect.CodeInternal,

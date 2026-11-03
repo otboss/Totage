@@ -34,6 +34,12 @@ In the project root directory, generate models using the following command:
 ```
 sqlc generate -f ./sqlc.yml
 ```
+
+For DB migrations:
+```
+ TODO: create DB migration command
+```
+
 <!-- ```
 (cd ./repository/sqlc && sqlc generate)
 ``` -->

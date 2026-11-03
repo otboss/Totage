@@ -7,6 +7,7 @@ import * as L from 'leaflet';
 import { addIcons } from 'ionicons';
 import { location } from 'ionicons/icons';
 import { LocationSelectorService } from './location-selector.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-location-selector',
@@ -19,17 +20,30 @@ import { LocationSelectorService } from './location-selector.service';
 export class LocationSelectorPage implements OnInit {
   private map!: L.Map
   readonly homePage: string = AppRoutes.Home()
+  public viewOnly: boolean = false;
 
   constructor(
     private locationSelectorService: LocationSelectorService,
     private navCtrl: NavController,
     private routerOutlet: IonRouterOutlet,
+    private router: Router,
   ) {
     addIcons({location})
   }
 
   ngOnInit() {
     this.initMap();
+    const navigation = this.router.currentNavigation();
+    this.viewOnly = false;
+    this.viewOnly = <boolean>navigation?.extras?.state?.viewOnly ?? false
+    if (this.viewOnly) {
+      this.map.dragging.disable()
+      this.map.touchZoom.disable()
+      this.map.doubleClickZoom.disable()
+      this.map.scrollWheelZoom.disable()
+      this.map.boxZoom.disable()
+      this.map.keyboard.disable()
+    }
   }
 
   ionViewDidEnter() {
@@ -41,7 +55,7 @@ export class LocationSelectorPage implements OnInit {
   }
 
   private initMap(): void {
-    this.map = L.map('map').setView([this.locationSelectorService.getSelectedLocation()?.latitude ?? 0, this.locationSelectorService.getSelectedLocation()?.longitude ?? 0], this.locationSelectorService.getSelectedLocation() === null ? 2 : 18);
+    this.map = L.map('map').setView([this.locationSelectorService.getSelectedLocation()?.latitude ?? 0, this.locationSelectorService.getSelectedLocation()?.longitude ?? 0], this.locationSelectorService.getSelectedLocation() === null ? 2 : 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -50,6 +64,7 @@ export class LocationSelectorPage implements OnInit {
   }
 
   selectLocation(){
+    if(this.viewOnly) return
     const center = this.map.getCenter()
     if(this.routerOutlet && this.routerOutlet.canGoBack()){
       this.navCtrl.pop()

@@ -502,7 +502,7 @@ message UpdateHoneySalesConfigCommand {
 
 message UpdateHoneySalesConfigResponse {
 
-}
+}-
 
 message GetFreightConfigQuery {
     int64 organizationId = 1;

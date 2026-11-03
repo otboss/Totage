@@ -17,5 +17,6 @@ shared/infrastructure/*.go
 **/*.connect.go
 gen
 
+app.log
 buf.lock
 __debug*

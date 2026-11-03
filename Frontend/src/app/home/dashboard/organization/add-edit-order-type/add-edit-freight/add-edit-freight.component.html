@@ -1,10 +1,93 @@
-<p id="open-modal">
-  add-edit-freight works!
-</p>
+
+
+<ion-content>
+  <form #form>
+    <ion-grid>
+
+      <ion-row>
+        <div class="vehicle-cat-toggle-container">
+          Enable  <ion-toggle [checked]="getIsEnabled()" (ionChange)="updateForm('isEnabled', $event.detail.checked)"></ion-toggle>
+        </div>
+      </ion-row>
+
+      <ion-row>
+        <!-- <ion-input 
+          #pickupAddressField
+          fill="outline"
+          label="Minumum Freight Order Price"
+          labelPlacement="floating">
+        </ion-input> -->
+        <!-- <ion-input 
+          #pickupAddressField
+          fill="outline"
+          label="Minumum Freight Order Price"
+          labelPlacement="floating"
+          [errorText]="formErrors().pickupAddress"
+          [value]="formValues().pickupAddress"
+          (keyup)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          (ionChange)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          [class.ion-touched]="isSubmitAttempted() && formErrors().pickupAddress"
+          [class.ion-invalid]="isSubmitAttempted() && formErrors().pickupAddress"
+          (ionBlur)="formErrors().pickupAddress && showFieldErrors($event.target)">
+        </ion-input> -->
+
+        <div>
+          <div class="dump-location-label-container">
+            <span>Solid Waste Dump Location</span>
+          </div>
+          <div class="dump-location-actions">
+            @if(formValues().solidWasteDumpSiteLatitude != null){
+              <ion-button fill="clear" (click)="viewLocation(formValues().solidWasteDumpSiteLatitude, formValues().solidWasteDumpSiteLongitude)">View</ion-button>
+              <ion-button fill="clear" color="danger" (click)="updateForm('solidWasteDumpSiteLatitude', null); updateForm('solidWasteDumpSiteLongitude', null)">Clear</ion-button>
+            } @else {
+              <ion-button fill="clear" (click)="setLocationTag('solid-waste'); navigateToLocationSelector()">Select on Map</ion-button>
+            }
+          </div>
+        </div>
+
+        <div>
+          <div class="dump-location-label-container">
+            <span>Liquid Waste Dump Location</span>
+          </div>
+          <div class="dump-location-actions">
+            @if(formValues().liquidWasteDumpSiteLatitude != null){
+              <ion-button fill="clear" (click)="viewLocation(formValues().liquidWasteDumpSiteLatitude, formValues().liquidWasteDumpSiteLongitude)">View</ion-button>
+              <ion-button fill="clear" color="danger" (click)="updateForm('liquidWasteDumpSiteLatitude', null); updateForm('liquidWasteDumpSiteLongitude', null)">Clear</ion-button>
+            } @else {
+              <ion-button fill="clear" (click)="setLocationTag('liquid-waste');navigateToLocationSelector()">Select on Map</ion-button>
+            }
+          </div>
+        </div>
+        
+
+      </ion-row>
+
+      <ion-row class="save-button-container">
+        <ion-button fill="solid" expand="block" (click)="onSubmit()">Save</ion-button>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+</ion-content>
+
+        <!-- <ion-input 
+          #pickupAddressField
+          fill="outline"
+          label="Minumum Freight Order Price"
+          labelPlacement="floating"
+          [errorText]="formErrors().pickupAddress"
+          [value]="formValues().pickupAddress"
+          (keyup)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          (ionChange)="updateForm('pickupAddress',  pickupAddressField.value.toString()); freightTruckClasses = undefined"
+          [class.ion-touched]="isSubmitAttempted() && formErrors().pickupAddress"
+          [class.ion-invalid]="isSubmitAttempted() && formErrors().pickupAddress"
+          (ionBlur)="formErrors().pickupAddress && showFieldErrors($event.target)">
+        </ion-input> -->
+
 <app-location-selection-modal></app-location-selection-modal>
 
 <!-- <ion-content [fullscreen]="true">
-  <form #form (submit)="onSubmit()">
+  <form #form (submit)="onSubmit()">p
     <ion-grid>
 
       <ion-row>

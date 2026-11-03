@@ -36,6 +36,7 @@ type CustomClaims struct {
 		Expires     int64  `json:"expires"`
 	}
 	// UserType UserType `json:"user_type"`
+	TermsAndConditionsAccepted bool
 	jwt.RegisteredClaims
 	// OrganizationAccountRoles map[OrganizationId]endpoints.AccountRole
 }
@@ -58,6 +59,7 @@ func (j *jsonWebToken) CreateToken(
 		AccessToken string `json:"google_access_token"`
 		Expires     int64  `json:"expires"`
 	},
+	termsAndConditionsAccepted bool,
 	signingKey string,
 ) (string, error) {
 
@@ -70,6 +72,7 @@ func (j *jsonWebToken) CreateToken(
 			Issuer:    "my-app",
 			Subject:   "user-auth",
 		},
+		TermsAndConditionsAccepted: termsAndConditionsAccepted,
 	}
 
 	// Create the token with the signing method and claims

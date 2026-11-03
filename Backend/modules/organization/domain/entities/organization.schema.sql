@@ -204,7 +204,6 @@ CREATE TABLE IF NOT EXISTS organization.freight_config
 (
     id BIGSERIAL PRIMARY KEY,
     organization_id BIGSERIAL NOT NULL UNIQUE,
-    freight_price_min FLOAT NOT NULL,
     solid_waste_dump_site_geog GEOGRAPHY(POINT, 4326),
     liquid_waste_dump_site_geog GEOGRAPHY(POINT, 4326),
     is_enabled boolean DEFAULT true,
