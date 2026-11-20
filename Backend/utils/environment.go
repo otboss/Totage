@@ -70,6 +70,12 @@ func init() {
 	Env.DISTRIBUTION_CENTER_COMMISSION_PERCENT = float32(distributionCenterCommissionPercent)
 
 	Env.DISTRIBUTION_CENTER_DEFAULT_ID = os.Getenv("DISTRIBUTION_CENTER_DEFAULT_ID")
+
+	instagramHandleVerificationTime, err := strconv.ParseInt(os.Getenv("INSTAGRAM_HANDLE_VERIFICATION_TIME_MS"), 10, 64)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	Env.INSTAGRAM_HANDLE_VERIFICATION_TIME_MS = instagramHandleVerificationTime
 }
 
 type environment struct {
@@ -106,6 +112,8 @@ type environment struct {
 	DISTRIBUTION_CENTER_OPERATIONAL_RADIUS_KM float32
 	DISTRIBUTION_CENTER_COMMISSION_PERCENT    float32
 	DISTRIBUTION_CENTER_DEFAULT_ID            string
+
+	INSTAGRAM_HANDLE_VERIFICATION_TIME_MS int64
 
 	KAFKA_GROUP_ID          string
 	KAFKA_BOOTSTRAP_SERVERS string

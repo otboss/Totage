@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonInput, IonGrid, IonRow, IonSelect, IonSelectOption, IonButtons, IonBackButton, IonButton } from '@ionic/angular/standalone';
@@ -12,6 +12,8 @@ import { create } from '@bufbuild/protobuf';
 import { CreateOrganizationCommandSchema } from 'src/app/shared/services/client/modules/organization/api/organization_pb';
 import { countryToAlpha3 } from 'country-to-iso';
 import { NavController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { copyOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-organization-create',
@@ -19,16 +21,18 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./organization-create.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonInput, IonGrid, IonRow, IonSelect, IonSelectOption, IonButtons, IonBackButton, IonButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonInput, IonGrid, IonRow, IonSelect, IonSelectOption, IonButtons, IonBackButton, IonButton],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class OrganizationCreatePage implements OnInit {
-
+  @ViewChild('swiper', { static: false }) swiperRef!: ElementRef
   readonly dashboardPage: string = AppRoutes.Dashboard()
 
   updateForm: typeof this.validator.updateForm = (x, y) => this.validator.updateForm(x, y) 
   formErrors = this.validator.formErrors
   showFieldErrors = this.validator.showFieldErrors
   isSubmitAttempted: boolean = false
+  instagramVerificationCode: string | null = null
 
   currencyOptions = Object.freeze(Object.keys(Currency).filter((key) => {
     // 1. Filter out the numeric reverse-mappings
@@ -52,7 +56,11 @@ export class OrganizationCreatePage implements OnInit {
     return !isNumericKey && !isUnspecified;
   }))
 
-  constructor(private organizationService: OrganizationService, private validator: OrganizationCreateValidator, private navCtrl: NavController) { }
+  constructor(private organizationService: OrganizationService, private validator: OrganizationCreateValidator, private navCtrl: NavController) {
+    addIcons({
+      copyOutline
+    })
+  }
 
   ngOnInit() {
   }
@@ -86,4 +94,14 @@ export class OrganizationCreatePage implements OnInit {
     return Number(val)
   }
 
+  goToNextSlide(isSectionValid: boolean){
+    if(!isSectionValid){
+      return
+    }
+    const swiperEl = this.swiperRef.nativeElement
+    if (swiperEl && swiperEl.swiper) {
+      swiperEl.swiper.slideNext()
+      this.isSubmitAttempted = false
+    }
+  }
 }

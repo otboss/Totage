@@ -177,3 +177,68 @@ ion-col{
 .time-card-header ion-icon {
     cursor: pointer;
 }
+
+.notification-selection-group{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.notification-selection-group-item{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.range-container{
+    width: 100%;
+    position: relative;
+}
+
+.range-container-label{
+    position: absolute;
+    top: 10px;
+}
+
+.range-wrapper {
+  width: 100%;
+}
+
+ion-range {
+  /* Remove default vertical padding so labels sit closer to the track */
+  --padding-bottom: 0px;
+  /* Ensure explicit side padding matches the label container */
+  padding-inline: 16px;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 16px; /* Must match ion-range padding-inline */
+  margin-top: -4px;
+}
+
+.range-labels span {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  text-align: center;
+  /* Keeps text centered directly under each tick point */
+  width: 0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.range-labels span.active {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+
+.range-label-indicators-container{
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 0 0 0 7px;
+}

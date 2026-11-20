@@ -16,6 +16,7 @@ shared/infrastructure/*.go
 **/*.pb.go
 **/*.connect.go
 gen
+migration_output.sql
 
 app.log
 buf.lock

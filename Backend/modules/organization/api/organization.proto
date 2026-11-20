@@ -61,7 +61,7 @@ service OrganizationService {
     rpc VerifyAccountOAuthHandler (VerifyAccountOAuthCommand) returns (VerifyAccountOAuthResponse);
 
     rpc AddInstagramHandleHandler (AddInstagramHandleCommand) returns (AddInstagramHandleResponse);
-    rpc DeleteInstagramHandleHandler (DeleteInstagramHandleCommand) returns (DeleteInstagramHandleResponse);
+    // rpc DeleteInstagramHandleHandler (DeleteInstagramHandleCommand) returns (DeleteInstagramHandleResponse);
 
     rpc VerifyEmailAndPhoneHandler (VerifyEmailAndPhoneCommand) returns (VerifyEmailAndPhoneResponse);
 
@@ -502,7 +502,7 @@ message UpdateHoneySalesConfigCommand {
 
 message UpdateHoneySalesConfigResponse {
 
-}-
+}
 
 message GetFreightConfigQuery {
     int64 organizationId = 1;
@@ -649,8 +649,9 @@ message AddInstagramHandleCommand {
 
 message AddInstagramHandleResponse {
     string verificationCode = 1;
-    bool isVerificationSuccessful = 2;
-    int64 failedAttempts = 3;
+    int64 failedAttempts = 2;
+    bool IsVerificationSuccessful = 3;
+    optional google.protobuf.Timestamp verificationEndTime = 4;
 }
 
 message DeleteInstagramHandleCommand {

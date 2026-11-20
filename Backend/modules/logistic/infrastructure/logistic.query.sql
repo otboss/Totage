@@ -706,6 +706,7 @@ INSERT INTO logistic.timeslots
     start_mm,
     end_hh,
     end_mm,
+    notice_period_ms,
     wkdays
 )
 VALUES
@@ -715,6 +716,7 @@ VALUES
     $3,
     $4,
     $5,
+    $6,
     sqlc.arg(wkdays)::int[]
 )
 RETURNING 
@@ -727,6 +729,7 @@ SELECT
     start_mm,
     end_hh,
     end_mm,
+    notice_period_ms,
     (wkdays::int[]) as weekdays
 FROM logistic.timeslots
 WHERE vehicle_id = $1;

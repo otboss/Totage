@@ -1,100 +1,91 @@
-# TODO:
-# WORK IN PROGRESS
-# THIS FILE IS NOT COMPLETED AND MAY NOt work as expected
+# --- CONFIGURATION ---
+TMP_DB_NAME = migration_target_tmp
+ENV_FILE = .env
 
-# Ensure this file runs using a clean shell environment and stops on any error
-.SHELLFLAGS = -ec
+# Local SQL schema tracking files (space-separated list)
+# REGISTER SCHEMA FILES BELOW IN THE CORRECT ORDER DEPENDING ON THEIR RELATIONSHIPS WITH OTHER TABLES
+SCHEMA_FILES = \
+    ./shared/domain/entities/shared.schema.sql \
+    ./modules/user/domain/entities/user.schema.sql \
+    ./modules/payment/domain/entities/payment.schema.sql \
+    ./modules/organization/domain/entities/organization.schema.sql \
+    ./modules/logistic/domain/entities/logistic.schema.sql \
+    ./modules/order/domain/entities/order.schema.sql
 
-# Automatically load and export your existing .env file 
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
+# --- DYNAMIC ENVIRONMENT LOADER (CROSS-PLATFORM) ---
+# Uses Python to parse the .env file safely across Unix and Windows systems
+DB_USER = $(shell python3 -c "import os; from pathlib import Path; [print(line.split('=')[1].strip()) for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_USER=')]")
+DB_PASS = $(shell python3 -c "import os; from pathlib import Path; [print(line.split('=')[1].strip()) for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_PASSWORD=')]")
+DB_HOST = $(shell python3 -c "import os; from pathlib import Path; vals = [line.split('=')[1].strip() for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_HOST=')]; print(vals[0] if vals else 'localhost')")
+DB_PORT = $(shell python3 -c "import os; from pathlib import Path; vals = [line.split('=')[1].strip() for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_PORT=')]; print(vals[0] if vals else '5432')")
+DB_NAME = $(shell python3 -c "import os; from pathlib import Path; [print(line.split('=')[1].strip()) for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_NAME=')]")
 
-# ⚠️ UPDATE THIS: The name of your actual live running PostGIS Docker container
-LIVE_CONTAINER_NAME = postgis_database
+# Determine SSL parameter cleanly using Python
+SSL_MODE = $(shell python3 -c "import os; from pathlib import Path; vals = [line.split('=')[1].strip().lower() for line in Path('$(ENV_FILE)').read_text().splitlines() if line.startswith('DATABASE_SSL_ENABLED=')]; print('require' if vals and vals[0] in ['true', '1'] else 'disable')")
 
-# Configuration for the temporary schema analyzer engine
-SHADOW_CONTAINER = postgres_shadow_diff_engine
-SHADOW_PORT = 54321
+# Assemble PostgreSQL connection URIs
+LIVE_DB_URL = "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(SSL_MODE)"
+TMP_DB_URL  = "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(TMP_DB_NAME)?sslmode=$(SSL_MODE)"
 
-.DEFAULT_GOAL := help
+# Export password safely to the environment so Postgres binaries pick it up automatically
+export PGPASSWORD=$(DB_PASS)
 
-.PHONY: help run
+.PHONY: all check-deps init-db load-schemas generate-diff cleanup migrate
 
-help:
-	@echo "================================================================="
-	@echo "📋 INTERACTIVE BOUNDARY-SAFE POSTGIS MIGRATION UTILITY"
-	@echo "================================================================="
-	@echo "Available commands:"
-	@echo "  make -f migrations.mk run      Validate schemas, preview ALTERs, & sync safely"
-	@echo "================================================================="
+# Default target runs the full analysis pipeline
+all: check-deps init-db load-schemas generate-diff cleanup
 
-run:
-	@echo "🔍 Step 1: Pre-validating queries and schemas with SQLC..."
-	@sqlc generate -f ./sqlc.yml
-	@echo "✅ Validation successful!"
+check-deps:
+	@echo "🔑 Verifying environment configuration and system dependencies..."
+	@if [ ! -f "$(ENV_FILE)" ]; then echo "❌ Error: $(ENV_FILE) file missing."; exit 1; fi
+	@command -v migra >/dev/null 2>&1 || { echo "❌ Error: 'migra' utility is not installed. Run: pip install migra sqlbag"; exit 1; }
+	@command -v psql >/dev/null 2>&1 || { echo "❌ Error: 'psql' client utilities are not installed."; exit 1; }
 
-	@echo "🏗️ Step 2: Spinning up ephemeral open-source schema diff environment..."
-	@docker rm -f $(SHADOW_CONTAINER) > /dev/null 2>&1 || true
-	@docker run --rm -d \
-		--name $(SHADOW_CONTAINER) \
-		-p $(SHADOW_PORT):5432 \
-		-e POSTGRES_PASSWORD=postgres \
-		postgis/postgis:17-3.5 > /dev/null
-	@until docker exec $(SHADOW_CONTAINER) pg_isready -U postgres >/dev/null 2>&1; do sleep 0.5; done
+init-db:
+	@echo "🔄 Resetting temporary sync database using template0..."
+	@dropdb -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) --if-exists $(TMP_DB_NAME)
+	@createdb -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) --template=template0 $(TMP_DB_NAME)
+	@echo "🌐 Injecting PostGIS extension and namespaces..."
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS shared;"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS \"user\";"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS payment;"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS organization;"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS logistic;"
+	@psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -c "CREATE SCHEMA IF NOT EXISTS _order;"
 
-	@echo "📦 Step 3: Loading domain layout files into analyzer engine..."
-	# 1. Initialize PostGIS extension on the analyzer
-	@docker exec -i $(SHADOW_CONTAINER) psql -U postgres -d postgres -c "CREATE EXTENSION IF NOT EXISTS postgis;"
-	
-	# 2. Extract and pre-create all schema namespaces exactly as defined in your code
-	@grep -ih "CREATE SCHEMA" shared/domain/entities/*.schema.sql modules/*/domain/entities/*.schema.sql 2>/dev/null | \
-		docker exec -i $(SHADOW_CONTAINER) psql -U postgres -d postgres || true
-
-	# 3. Stream all layouts dynamically into your transaction block arrangement
-	@( \
-		echo "BEGIN;"; \
-		cat "shared/domain/entities/shared.schema.sql" 2>/dev/null || true; \
-		cat modules/user/domain/entities/*.schema.sql 2>/dev/null || true; \
-		cat modules/payment/domain/entities/*.schema.sql 2>/dev/null || true; \
-		cat modules/organization/domain/entities/*.schema.sql 2>/dev/null || true; \
-		cat modules/logistic/domain/entities/*.schema.sql 2>/dev/null || true; \
-		cat modules/order/domain/entities/*.schema.sql 2>/dev/null || true; \
-		echo "COMMIT;" \
-	) | docker exec -i $(SHADOW_CONTAINER) psql -U postgres -d postgres -v ON_ERROR_STOP=1
-
-	@echo "⚙️ Step 4: Generating and reviewing ALTER statements natively..."
-	$(eval SSL_MODE := $(if $(filter true,$(DATABASE_SSL_ENABLED)),require,disable))
-	$(eval LIVE_DB_URL := postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@host.docker.internal:$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=$(SSL_MODE))
-	$(eval SHADOW_DB_URL := postgres://postgres:postgres@host.docker.internal:$(SHADOW_PORT)/postgres?sslmode=disable)
-
-	# Using the official public Python slim image (which is perfectly multi-arch compatible)
-	# and installing migra on-the-fly inside an isolated runtime container
-	@docker run --rm \
-		--add-host=host.docker.internal:host-gateway \
-		python:3.11-slim bash -c "pip install --quiet migra psycopg2-binary && migra --unsafe '$(LIVE_DB_URL)' '$(SHADOW_DB_URL)'" > migration_changes.sql || true
-
-	@if [ -s migration_changes.sql ] && grep -q '[a-zA-Z]' migration_changes.sql; then \
-		echo ""; \
-		echo "📋 The following differences were detected between your code and the live database:"; \
-		echo "-----------------------------------------------------------------"; \
-		cat migration_changes.sql; \
-		echo "-----------------------------------------------------------------"; \
-		echo ""; \
-		exec 3<&0; \
-		read -p "⚠️ Do you want to apply these alterations to your live database? [y/N]: " CONFIRM <&3; \
-		if [ "$$CONFIRM" = "y" ] || [ "$$CONFIRM" = "Y" ]; then \
-			echo "🚀 Applying database alterations safely..."; \
-			docker exec -i $(LIVE_CONTAINER_NAME) psql -U $(DATABASE_USER) -d $(DATABASE_NAME) < migration_changes.sql; \
-			echo "🎉 Database synchronized successfully!"; \
+load-schemas:
+	@echo "📂 Loading local schema sequence into temporary database..."
+	@for file in $(SCHEMA_FILES); do \
+		if [ -f "$$file" ]; then \
+			echo "  ↳ Applying $$file..."; \
+			psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(TMP_DB_NAME) -q -f "$$file"; \
 		else \
-			echo "❌ Migration cancelled. No changes were made to your live data."; \
+			echo "⚠️ Warning: Schema file not found: $$file"; \
 		fi \
+	done
+
+generate-diff:
+	@echo "🔀 Calculating PostgreSQL schema differences..."
+	@echo "--------------------------------------------------------"
+	@# Capture migra's exit status code. Status 0 (no diff) and 2 (diff found) are both successes.
+	@STATUS=0; migra --unsafe --schema=shared --schema=user --schema=payment --schema=organization --schema=logistic --schema=_order $(LIVE_DB_URL) $(TMP_DB_URL) > migration_output.sql || STATUS=$$?; \
+	if [ $$STATUS -ne 0 ] && [ $$STATUS -ne 2 ]; then \
+		echo "❌ Error: migra failed with unexpected crash exit code $$STATUS"; \
+		exit 1; \
+	fi
+	@echo "✅ Migration script generated successfully!"
+	@echo "📄 Output saved to: migration_output.sql"
+	@echo "--------------------------------------------------------"
+	@if [ ! -s migration_output.sql ]; then \
+		echo "🎉 Databases are already in sync. No changes detected."; \
 	else \
-		echo "✅ Live database columns are already fully up to date with your domain files."; \
+		echo "📋 Preview of ALTER commands to be executed:"; \
+		cat migration_output.sql; \
 	fi
 
-	@echo "🧹 Step 5: Cleaning up local temporary tracking contexts..."
-	@docker stop $(SHADOW_CONTAINER) > /dev/null
-	@rm -f migration_changes.sql
+cleanup:
+	@echo "--------------------------------------------------------"
+	@echo "🧹 Cleaning up temporary tracking entities..."
+	@dropdb -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) $(TMP_DB_NAME)
+	@echo "✨ Done."

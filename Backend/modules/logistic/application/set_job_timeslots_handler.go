@@ -70,14 +70,16 @@ func (s *Handlers) SetJobTimeslotsHandler(
 		StartMM := *jobTimeslot.StartMM
 		EndHH := *jobTimeslot.EndHH
 		EndMM := *jobTimeslot.EndMM
+		NoticePeriodMs := jobTimeslot.NoticePeriodMs
 
 		_, err := db_logistic.Query.CreateTimeslot(ctx, db_logistic.CreateTimeslotParams{
-			VehicleID: vehicle.ID,
-			StartHh:   int16(StartHH),
-			StartMm:   int16(StartMM),
-			EndHh:     int16(EndHH),
-			EndMm:     int16(EndMM),
-			Wkdays:    weekdays,
+			VehicleID:      vehicle.ID,
+			StartHh:        int16(StartHH),
+			StartMm:        int16(StartMM),
+			EndHh:          int16(EndHH),
+			EndMm:          int16(EndMM),
+			NoticePeriodMs: NoticePeriodMs,
+			Wkdays:         weekdays,
 		})
 
 		if err != nil {

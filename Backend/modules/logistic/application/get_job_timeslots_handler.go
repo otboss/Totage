@@ -48,6 +48,7 @@ func (s *Handlers) GetJobTimeslotsHandler(
 		timeslot.StartMM = &StartMm
 		timeslot.EndHH = &EndHh
 		timeslot.EndMM = &EndMm
+		timeslot.NoticePeriodMs = jobTimeslot.NoticePeriodMs
 
 		response.JobTimeslot = append(response.JobTimeslot, &timeslot)
 	}

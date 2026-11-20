@@ -14,6 +14,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"connectrpc.com/connect"
 )
@@ -55,18 +56,12 @@ func (s *Handlers) AddInstagramHandleHandler(
 		)
 	}
 
-	if err != pgx.ErrNoRows &&
-		instagramHandleVerification.FailedAttempts >= 3 &&
-		time.Now().Before(instagramHandleVerification.CreatedAt.Time.Add(30*time.Minute)) {
+	isCurrentTimeBeforeExpiration := time.Now().Before(instagramHandleVerification.CreatedAt.Time.Add(time.Duration(utils.Env.INSTAGRAM_HANDLE_VERIFICATION_TIME_MS) * time.Millisecond))
+	expirationTime := instagramHandleVerification.CreatedAt.Time.Add(time.Duration(utils.Env.INSTAGRAM_HANDLE_VERIFICATION_TIME_MS) * time.Millisecond)
+	expirationTimestampProto := timestamppb.New(expirationTime)
 
-		return nil, errors.New("too many failed attempts, try again later")
-	}
-
-	if req.Msg.InstagramHandle == nil {
-		if err != pgx.ErrNoRows && time.Now().Before(instagramHandleVerification.CreatedAt.Time.Add(30*time.Minute)) {
-			return nil, errors.New("verification already in progress")
-		}
-
+	if err == pgx.ErrNoRows || isCurrentTimeBeforeExpiration == false {
+		// FORCE START NEW VERIFICATION SESSION
 		instagramHandleVerification, err := db_organization.Query.CreateInstagramHandleVerification(ctx, account.OrganizationID)
 		if err != nil {
 			return nil, connect.NewError(
@@ -75,10 +70,30 @@ func (s *Handlers) AddInstagramHandleHandler(
 			)
 		}
 
+		expirationTime := time.Now().Add(time.Duration(utils.Env.INSTAGRAM_HANDLE_VERIFICATION_TIME_MS) * time.Millisecond)
+		expirationTimeProto := timestamppb.New(expirationTime)
+
 		return connect.NewResponse(&endpoints.AddInstagramHandleResponse{
 			VerificationCode:         instagramHandleVerification.InstagramHandleVerificationCode,
 			IsVerificationSuccessful: false,
 			FailedAttempts:           0,
+			VerificationEndTime:      expirationTimeProto,
+		}), nil
+	}
+
+	if instagramHandleVerification.FailedAttempts >= 3 && isCurrentTimeBeforeExpiration == true {
+		return nil, connect.NewError(
+			connect.CodeResourceExhausted,
+			errors.New("too many verification attempts, please try again later"),
+		)
+	}
+
+	if req.Msg.InstagramHandle == nil && isCurrentTimeBeforeExpiration == true {
+		return connect.NewResponse(&endpoints.AddInstagramHandleResponse{
+			VerificationCode:         instagramHandleVerification.InstagramHandleVerificationCode,
+			IsVerificationSuccessful: false,
+			FailedAttempts:           int64(instagramHandleVerification.FailedAttempts),
+			VerificationEndTime:      expirationTimestampProto,
 		}), nil
 	}
 
@@ -100,14 +115,17 @@ func (s *Handlers) AddInstagramHandleHandler(
 				errors.New("internal server error"),
 			)
 		}
-		return nil, errors.New("verification attempt failed, try again")
+
+		return connect.NewResponse(&endpoints.AddInstagramHandleResponse{
+			VerificationCode:         instagramHandleVerification.InstagramHandleVerificationCode,
+			IsVerificationSuccessful: false,
+			FailedAttempts:           int64(instagramHandleVerification.FailedAttempts + 1),
+			VerificationEndTime:      expirationTimestampProto,
+		}), nil
 	}
 
 	err = db_organization.Query.UpdateInstagramHandleAndAvatarUrl(ctx, db_organization.UpdateInstagramHandleAndAvatarUrlParams{
-		InstagramHandle: pgtype.Text{
-			String: *req.Msg.InstagramHandle,
-			Valid:  true,
-		},
+		InstagramHandle: *req.Msg.InstagramHandle,
 		AvatarUrl: pgtype.Text{
 			String: avatarUrl,
 			Valid:  true,
@@ -125,6 +143,7 @@ func (s *Handlers) AddInstagramHandleHandler(
 		VerificationCode:         instagramHandleVerification.InstagramHandleVerificationCode,
 		IsVerificationSuccessful: isVerificationSuccessful,
 		FailedAttempts:           int64(instagramHandleVerification.FailedAttempts),
+		VerificationEndTime:      expirationTimestampProto,
 	}), nil
 }
 

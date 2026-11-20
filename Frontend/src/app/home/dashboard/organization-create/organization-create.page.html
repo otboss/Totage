@@ -9,118 +9,215 @@
 
 <ion-content [fullscreen]="true">
   <form #form (submit)="onSubmit()">
-    <ion-grid>
+    <div class="swiper-container">
+      <swiper-container #swiper space-between="30" slides-per-view="1" class="swiper-no-swiping" auto-height="true" slides-per-view="1">
+        <swiper-slide>
+          <div class="swiper-slide-inner-container">
+            <ion-grid>
 
-      <ion-row>
-        <ion-input 
-          #organizationNameField 
-          fill="outline" 
-          label="Organization Name" 
-          labelPlacement="floating" 
-          [errorText]="formErrors().organizationName"
-          (keyup)="updateForm('organizationName',  organizationNameField.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().organizationName"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().organizationName"
-          (ionBlur)="formErrors().organizationName && showFieldErrors($event.target)">
-        </ion-input>
-      </ion-row>
+              <ion-row>
+                <ion-input 
+                  #organizationNameField 
+                  fill="outline" 
+                  label="Organization Name" 
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().organizationName"
+                  (keyup)="updateForm('organizationName',  organizationNameField.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().organizationName"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().organizationName"
+                  (ionBlur)="formErrors().organizationName && showFieldErrors($event.target)">
+                </ion-input>
+              </ion-row>
 
-      <ion-row>
-        <ion-input 
-          #addressField 
-          fill="outline" 
-          label="Address" 
-          labelPlacement="floating" 
-          [errorText]="formErrors().address"
-          (keyup)="updateForm('address',  addressField.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().address"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().address"
-          (ionBlur)="formErrors().address && showFieldErrors($event.target)">
-        </ion-input>
-      </ion-row>
+              <ion-row>
+                <ion-input 
+                  #addressField 
+                  fill="outline" 
+                  label="Address" 
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().address"
+                  (keyup)="updateForm('address',  addressField.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().address"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().address"
+                  (ionBlur)="formErrors().address && showFieldErrors($event.target)">
+                </ion-input>
+              </ion-row>
 
-      <ion-row>
-        <ion-select 
-          #countryField 
-          label="Country" 
-          label-placement="floating" 
-          fill="outline" 
-          interface="popover"
-          [errorText]="formErrors().country"
-          (ionChange)="updateForm('country',  $event.detail.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().country"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().country"
-          (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
-          @for(country of countryValues; track $index){
-            <ion-select-option [value]="country">{{countryCodeToNameMap[country]}}</ion-select-option>
-          }
-        </ion-select>
-      </ion-row>
+              <ion-row>
+                <ion-select 
+                  #countryField 
+                  label="Country" 
+                  label-placement="floating" 
+                  fill="outline" 
+                  interface="popover"
+                  [errorText]="formErrors().country"
+                  (ionChange)="updateForm('country',  $event.detail.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().country"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().country"
+                  (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
+                  @for(country of countryValues; track $index){
+                    <ion-select-option [value]="country">{{countryCodeToNameMap[country]}}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-row>
 
-      <ion-row>
-        <ion-select 
-          #currencyField 
-          label="Currency" 
-          label-placement="floating" 
-          fill="outline" 
-          interface="popover"
-          [errorText]="formErrors().currency"
-          (ionChange)="updateForm('currency',  $event.detail.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().currency"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().currency"
-          (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
-          @for(currency of currencyOptions; track $index){
-            <ion-select-option [value]="currency">{{ currency }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-row>
+              <ion-row>
+                <ion-select 
+                  #currencyField 
+                  label="Currency" 
+                  label-placement="floating" 
+                  fill="outline" 
+                  interface="popover"
+                  [errorText]="formErrors().currency"
+                  (ionChange)="updateForm('currency',  $event.detail.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().currency"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().currency"
+                  (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
+                  @for(currency of currencyOptions; track $index){
+                    <ion-select-option [value]="currency">{{ currency }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-row>
 
-      <ion-row>
-        <ion-input 
-          #phoneField 
-          fill="outline" 
-          label="Phone" 
-          labelPlacement="floating" 
-          [errorText]="formErrors().phone"
-          (keyup)="updateForm('phone',  phoneField.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().phone"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().phone"
-          (ionBlur)="formErrors().phone && showFieldErrors($event.target)">
-        </ion-input>
-      </ion-row>
+              <ion-row>
+                <ion-input 
+                  #phoneField 
+                  fill="outline" 
+                  label="Phone" 
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().phone"
+                  (keyup)="updateForm('phone',  phoneField.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().phone"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().phone"
+                  (ionBlur)="formErrors().phone && showFieldErrors($event.target)">
+                </ion-input>
+              </ion-row>
 
-      <ion-row>
-        <ion-input 
-          #emailField 
-          fill="outline" 
-          label="Email" 
-          labelPlacement="floating" 
-          [errorText]="formErrors().email"
-          (keyup)="updateForm('email',  emailField.value.toString())"
-          [class.ion-touched]="isSubmitAttempted && formErrors().email"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().email"
-          (ionBlur)="formErrors().email && showFieldErrors($event.target)">
-        </ion-input>
-      </ion-row>
+              <ion-row>
+                <ion-input 
+                  #emailField 
+                  fill="outline" 
+                  label="Email" 
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().email"
+                  (keyup)="updateForm('email',  emailField.value.toString())"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().email"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().email"
+                  (ionBlur)="formErrors().email && showFieldErrors($event.target)">
+                </ion-input>
+              </ion-row>
 
-      <ion-row>
-        <ion-input 
-          #dutyFreeKmField 
-          fill="outline" 
-          label="Duty Free Km" 
-          labelPlacement="floating" 
-          [errorText]="formErrors().dutyFreeKm"
-          (keyup)="updateForm('dutyFreeKm',  Number(dutyFreeKmField.value.toString()))"
-          [class.ion-touched]="isSubmitAttempted && formErrors().dutyFreeKm"
-          [class.ion-invalid]="isSubmitAttempted && formErrors().dutyFreeKm"
-          (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
-        </ion-input>
-      </ion-row>
+              <ion-row>
+                <ion-input 
+                  #dutyFreeKmField 
+                  fill="outline" 
+                  label="Duty Free Km" 
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().dutyFreeKm"
+                  (keyup)="updateForm('dutyFreeKm',  Number(dutyFreeKmField.value.toString()))"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)">
+                </ion-input>
+              </ion-row>
 
-      <ion-row>
-        <ion-button fill="solid" expand="block" type="submit">Submit</ion-button>
-      </ion-row>
+              <ion-row>
+                <ion-button fill="solid" expand="block" type="submit" (click)="goToNextSlide(true)">Next</ion-button>
+              </ion-row>
 
-    </ion-grid>
+            </ion-grid>
+          </div>
+        </swiper-slide>
+        <swiper-slide>
+          <div class="swiper-slide-inner-container">
+            <h4>Connect Instagram</h4>
+
+            <ion-grid>
+              <ion-row>
+                <ion-input 
+                  #instagramHandle 
+                  fill="outline" 
+                  label="Instagram Handle"
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().dutyFreeKm"
+                  (keyup)="updateForm('dutyFreeKm',  Number(dutyFreeKmField.value.toString()))"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)"
+                  [disabled]="instagramVerificationCode !== null">
+                </ion-input>
+              </ion-row>
+              <ion-row>
+                <div class="verification-details-row">
+                  <span>Paste the code below into the page bio</span>
+                  <div class="verification-code-container">
+                    <div>
+                      <!-- <ion-icon name="copy-outline" color="primary"></ion-icon> -->
+                    </div>
+                    <div>
+                      <span>bd484183-f3bc-4b32-8907-e42fff296c94</span>
+                    </div>
+                  </div>
+                </div>
+              </ion-row>
+              <!-- @if(instagramVerificationCode !== null)
+              { -->
+                
+                
+              <!-- } -->
+              <ion-row>
+                <ion-button fill="solid" expand="block" type="submit" (click)="goToNextSlide(true)">Next</ion-button>
+              </ion-row>
+
+            </ion-grid>
+          </div>
+        </swiper-slide>
+        <swiper-slide>
+          <div class="swiper-slide-inner-container">
+            <h4>Connect Google Business</h4>
+
+            <ion-grid>
+              <ion-row>
+                <ion-input 
+                  #instagramHandle 
+                  fill="outline" 
+                  label="Google Maps Business Link"
+                  labelPlacement="floating" 
+                  [errorText]="formErrors().dutyFreeKm"
+                  (keyup)="updateForm('dutyFreeKm',  Number(dutyFreeKmField.value.toString()))"
+                  [class.ion-touched]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  [class.ion-invalid]="isSubmitAttempted && formErrors().dutyFreeKm"
+                  (ionBlur)="formErrors().dutyFreeKm && showFieldErrors($event.target)"
+                  [disabled]="instagramVerificationCode !== null">
+                </ion-input>
+              </ion-row>
+              <ion-row>
+                <div class="verification-details-row">
+                  <span>Paste the code below into the description</span>
+                  <div class="verification-code-container">
+                    <div>
+                      <!-- <ion-icon name="copy-outline" color="primary"></ion-icon> -->
+                    </div>
+                    <div>
+                      <span>bd484183-f3bc-4b32-8907-e42fff296c94</span>
+                    </div>
+                  </div>
+                </div>
+              </ion-row>
+              <!-- @if(instagramVerificationCode !== null)
+              { -->
+                
+                
+              <!-- } -->
+              <ion-row>
+                <ion-button fill="solid" expand="block" type="submit" (click)="goToNextSlide(true)">Next</ion-button>
+              </ion-row>
+
+            </ion-grid>
+          </div>
+        </swiper-slide>
+        
+      </swiper-container>  
+    </div>
   </form>
 </ion-content>

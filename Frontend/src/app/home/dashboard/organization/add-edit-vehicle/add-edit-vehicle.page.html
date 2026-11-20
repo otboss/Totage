@@ -628,6 +628,32 @@
                     @if(isSubmitAttempted && formErrorsJobTimeslot().jobTimeslots?.at(i).weekdays){
                       <ion-text color="danger">Weekday option is required</ion-text>
                     }
+                    <div class="range-container">
+                      <div class="range-container-label">
+                        Notice Period
+                      </div>
+                      <ion-range
+                        aria-label="Custom time interval"
+                        [min]="0"
+                        [max]="noticePeriodValues.length - 1"
+                        [step]="1"
+                        [snaps]="true"
+                        [ticks]="true"
+                        [pin]="true"
+                        [pinFormatter]="formatTimeslotNoticePeriodPin"
+                        [value]="getNoticePeriodIndex(timeslot.noticePeriodMs)"
+                        (ionChange)="updateJobTimeslotForm(i, 'noticePeriodMs', null, ((noticePeriodValues[$any($event).detail.value]) * 3.6e+6).toString())"
+                      ></ion-range>
+
+                      <div class="range-label-indicators-container">
+                        @for(step of noticePeriodValues; track $index)
+                        {
+                          <div>
+                            <span>{{step}}hr</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
                   </div>
                 </ion-card>
               </div>

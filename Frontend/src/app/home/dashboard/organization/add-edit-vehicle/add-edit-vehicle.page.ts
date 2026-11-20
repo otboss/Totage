@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonGrid, IonRow, IonInput, IonButton, IonToggle, IonSelect, IonSelectOption, IonSegment, IonSegmentButton, IonCheckbox, IonModal, IonIcon, NavController, ToastController, IonRouterOutlet, IonCard, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonGrid, IonRow, IonInput, IonButton, IonToggle, IonSelect, IonSelectOption, IonSegment, IonSegmentButton, IonCheckbox, IonModal, IonIcon, NavController, ToastController, IonRouterOutlet, IonCard, AlertController, IonRange } from '@ionic/angular/standalone';
 import { AppRoutes } from 'src/constants/AppRoutes';
 import { CreateRentalVehicleCommandSchema, CreateTruckCommandSchema, CreateVehicleCommandSchema, CreateVehicleResponse, CreateVehicleResponseSchema, DeleteVehicleCommandSchema, FuelType, GetJobTimeslotsQuerySchema, GetRentalVehicleQuerySchema, GetTruckQuerySchema, GetVehicleQuerySchema, RentalVehicle, SetJobTimeslotCommandSchema, TogglePublicityRentalVehicleCommandSchema, TogglePublicityTruckTruckCommandSchema, UpdateVehicleDriverCommandSchema, Vehicle } from 'src/app/shared/services/client/modules/logistic/api/logistic_pb';
 import { AddEditRentalVehicleValidator, AddEditTruckValidator, AddEditVehicleValidator, SetJobTimeslotValidator } from './add-edit-vehicle.validator';
@@ -25,10 +25,11 @@ import { Weekdays } from 'src/app/shared/services/client/shared/api/weekdays_pb'
   styleUrls: ['./add-edit-vehicle.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonButtons, IonBackButton, IonGrid, IonRow, IonInput, IonButton, IonSelect, IonSelectOption, IonSegment, IonSegmentButton, IonCheckbox, IonToggle, IonModal, IonIcon, IonCard],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonButtons, IonBackButton, IonGrid, IonRow, IonInput, IonButton, IonSelect, IonSelectOption, IonSegment, IonSegmentButton, IonCheckbox, IonToggle, IonModal, IonIcon, IonCard, IonRange],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AddEditVehiclePage implements OnInit {
+  readonly noticePeriodValues: number[] = [1,2,4,6,12,24]
   readonly dashboardPage: string = AppRoutes.Dashboard()
   updateVehicleForm: typeof this.validatorVehicle.updateForm = (x, y) => this.validatorVehicle.updateForm(x, y)
   updateTruckForm: typeof this.validatorTruck.updateForm = (x, y) => this.validatorTruck.updateForm(x, y)
@@ -39,8 +40,8 @@ export class AddEditVehiclePage implements OnInit {
     event: Event,
     extraValue?: string
   ) {
-    const input = event.target as HTMLInputElement
-    const value = input.value
+    const input = (event?.target as HTMLInputElement) ?? null
+    const value = input?.value ?? extraValue
 
     const path = `jobTimeslots.${index}.${field}` as any
 
@@ -246,6 +247,9 @@ export class AddEditVehiclePage implements OnInit {
         return
       }
       for(const [index, timeslot] of this.validatorJobTimeslot.formValues().jobTimeslots.entries()){
+        if(timeslot.noticePeriodMs === 0){
+          this.updateJobTimeslotForm(index, 'noticePeriodMs', null, (3600000).toString())
+        }
         for(const fieldError of Object.values(this.validatorJobTimeslot.formErrors().jobTimeslots[index])){
           if(fieldError != null){
             return
@@ -532,4 +536,34 @@ export class AddEditVehiclePage implements OnInit {
   getSelectedEnrollmentsLength(): number{
     return Object.keys(this.selectedEnrollments).length
   }
+
+  getNoticePeriodIndex(noticePeriodMs: number): number {
+    const hours = (noticePeriodMs || 0) / 3600000;
+    let closestIndex = 0;
+    let minDiff = Math.abs(this.noticePeriodValues[0] - hours);
+
+    for (let i = 1; i < this.noticePeriodValues.length; i++) {
+      const diff = Math.abs(this.noticePeriodValues[i] - hours);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = i;
+      }
+    }
+
+    return closestIndex;
+  }
+
+  // Index bound to the slider (0 = 1hr, 5 = 24hr)
+  // selectedIndex = 0; // Defaults to 4hr
+
+  // get currentHours(): number {
+  //   return this.noticePeriodValues[this.selectedIndex];
+  // }
+
+  // Formats the floating tooltip above the thumb
+  formatTimeslotNoticePeriodPin = (index: number): string => {
+    return `${this.noticePeriodValues[index]}hr`;
+  };
+
+
 }

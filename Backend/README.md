@@ -37,12 +37,11 @@ sqlc generate -f ./sqlc.yml
 
 For DB migrations:
 ```
- TODO: create DB migration command
+make -f ./migrations.mk
 ```
 
-<!-- ```
-(cd ./repository/sqlc && sqlc generate)
-``` -->
+Output will be generated to `migrations_output.sql`
+<br/>
 
 Setup Kafka using the `kafka.yml` file located in the project root directory:
 ```

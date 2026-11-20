@@ -35,5 +35,10 @@ message JobTimeslot {
         (buf.validate.field).int32.gte = 0,
         (buf.validate.field).int32.lte = 59
     ];
-    repeated shared.Weekdays weekdays = 5 [(buf.validate.field).repeated.min_items = 1];
+    int32 noticePeriodMs = 5 [
+        (buf.validate.field).required = true,
+        (buf.validate.field).int32.gte = 3600000,
+        (buf.validate.field).int32.lte = 86400000
+    ];
+    repeated shared.Weekdays weekdays = 6 [(buf.validate.field).repeated.min_items = 1];
 }

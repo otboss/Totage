@@ -111,5 +111,6 @@ CREATE TABLE IF NOT EXISTS logistic.timeslots
     end_hh   SMALLINT NOT NULL CHECK (end_hh BETWEEN 0 AND 23),
     end_mm SMALLINT NOT NULL CHECK (end_mm = 0 OR end_mm = 30),
     wkdays shared.weekday[] NOT NULL CHECK ( array_length(wkdays, 1) > 0 ),
+    notice_period_ms INTEGER NOT NULL,
     CONSTRAINT fk_vehicle FOREIGN KEY (vehicle_id) REFERENCES logistic.vehicles(id) ON DELETE CASCADE
 );
